@@ -86,6 +86,12 @@ class ModemTest(unittest.TestCase):
         #Change order and assert again
         mod_set.set_mod_order(64)
         self.assertEqual(64,mod_set.get_mod_order())
+        
+    def test_map(self):
+        pass
+    
+    def test_demap(self):
+        pass
     
     def test_modulate(self):
         pass
