@@ -9,7 +9,7 @@ Created on Mon Mar 27 14:54:10 2017
 
 import unittest
 
-from src.statistics import Statistics
+from statistics import Statistics
 
 class StatisticsTest(unittest.TestCase):
     
