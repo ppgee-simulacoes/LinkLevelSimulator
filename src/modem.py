@@ -11,6 +11,7 @@ Created on Mon Apr 10 08:54:40 2017
 @author: Calil
 """
 
+from commpy.modulation import QAMModem, PSKModem
 import numpy as np
 
 class Modem(object):
@@ -39,12 +40,15 @@ class Modem(object):
         constelation: 1D complex array
             Symbol constelation mapping in bit counting order.
         """
-        # If mod_order is a power of 2, save value
-        if np.log2(mod_order) == round(np.log2(mod_order)):
-            self.__mod_order = mod_order
         # Raise exception if provided value is not a power of 2
-        else:
+        if np.log2(mod_order) != round(np.log2(mod_order)):
             raise NameError('Modulation order not a power of 2!')
+            
+        # For modulation order lower than 16, use PSK. Otherwise, use QAM
+        if mod_order < 16:
+            self.__commpy_mod = PSKModem(mod_order)
+        else:
+            self.__commpy_mod = QAMModem(mod_order)
             
         self.__norm = norm
         self.__pad = pad
@@ -59,7 +63,7 @@ class Modem(object):
         mod_order: integer
             QAM modulation order. 4 means QPSK.
         """
-        return self.__mod_order
+        return self.__commpy_mod.m
     
     def get_normalize(self):
         """
@@ -103,7 +107,43 @@ class Modem(object):
         mod_order: integer
             New QAM modulation order. 4 means QPSK.
         """
-        self.__mod_order = mod_order
+        # For modulation order lower than 16, use PSK. Otherwise, use QAM
+        if mod_order < 16:
+            self.__commpy_mod = PSKModem(mod_order)
+        else:
+            self.__commpy_mod = QAMModem(mod_order)
+            
+    def map_bits(self,in_bits):
+        """
+        Maps bits to symbols according to modulation scheme.
+        
+        Parameters
+        __________
+        in_bits: 1D array of integers
+            Bits to be mapped.
+            
+        Returns
+        _______
+        symbols: 1D array of complex numbers
+            Symbols correspondent to mapped bits
+        """
+        pass
+    
+    def demap_bits(self,in_symbols):
+        """
+        Maps symbols to bits according to modulation scheme.
+        
+        Parameters
+        __________
+        in_symbols: 1D array of complex numbers
+            Symbols correspondent to mapped bits
+            
+        Returns
+        _______
+        bits: 1D array of integers
+            Demapped bits.
+        """
+        pass
     
     def modulate(self,in_bits):
         """
