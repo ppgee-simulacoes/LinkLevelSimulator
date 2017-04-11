@@ -11,9 +11,11 @@ Created on Mon Apr 10 08:54:40 2017
 @author: Calil
 """
 
+import numpy as np
+
 class Modem(object):
     
-    def __init__(self,mod_order):
+    def __init__(self,mod_order,norm,pad,constelation = 0):
         """
         Constructor method. Initializes attributes:
             
@@ -22,12 +24,33 @@ class Modem(object):
                          
         Parameters
         __________
-        mod_order: integer. Must be an even power of two (2**(2*k))
-            QAM modulation order. Prvide 4 for QPSK.
+        mod_order: integer
+            Modulation order:
+                2       PBSK
+                4       QPSK
+                8       8-PSK
+                16      16-QAM
+                64      64-QAM
+                256     256-QAM    
+        norm: bool
+            Boolean to indicate normalization usage
+        pad: bool
+            Boolean to indicate padding usage
+        constelation: 1D complex array
+            Symbol constelation mapping in bit counting order.
         """
-        pass
+        # If mod_order is a power of 2, save value
+        if np.log2(mod_order) == round(np.log2(mod_order)):
+            self.__mod_order = mod_order
+        # Raise exception if provided value is not a power of 2
+        else:
+            raise NameError('Modulation order not a power of 2!')
+            
+        self.__norm = norm
+        self.__pad = pad
+        self.__constelation = constelation
     
-    def get_modulation_order(self):
+    def get_mod_order(self):
         """
         Getter for modulation order.
         
@@ -36,9 +59,42 @@ class Modem(object):
         mod_order: integer
             QAM modulation order. 4 means QPSK.
         """
-        pass
+        return self.__mod_order
     
-    def set_modulation_order(self,mod_order):
+    def get_normalize(self):
+        """
+        Getter for normalization boolean
+        
+        Returns
+        _______
+        norm: bool
+            True if normalization is performed. False otherwise.
+        """
+        return self.__norm
+    
+    def get_padding(self):
+        """
+        Getter for padding boolean
+        
+        Returns
+        _______
+        pad: bool
+            True if padding is performed. False otherwise.
+        """
+        return self.__pad
+    
+    def get_constelation(self):
+        """
+        Getter for constelation mapping
+        
+        Returns
+        _______
+        constelation: complex 1D array
+            Constelation in bit counting order.
+        """
+        return self.__constelation
+    
+    def set_mod_order(self,mod_order):
         """
         Setter for modulation order.
         
@@ -47,7 +103,7 @@ class Modem(object):
         mod_order: integer
             New QAM modulation order. 4 means QPSK.
         """
-        pass
+        self.__mod_order = mod_order
     
     def modulate(self,in_bits):
         """
