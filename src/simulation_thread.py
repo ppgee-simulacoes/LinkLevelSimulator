@@ -25,7 +25,7 @@ class SimulationThread(object):
         """
         self.param = param
         self.station = Source(param.n_bits,param.seeds[0])
-        self.chann = Channel(param.chan_mod,param.seeds[0],param.p[0])
+        self.chann = Channel(param.chan_mod,param.seeds[0],param.p[0],param.transition_mtx)
         self.stat = Statistics(param.n_bits,param.tx_rate,param.conf)
         self.res = Results(param,figs_dir)
         self.theo = Theoretical(param)

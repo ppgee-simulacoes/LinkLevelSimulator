@@ -67,7 +67,7 @@ class Parameters(object):
     # CHANNEL PARAMETERS
     
     # Channel model
-    chan_mod = ChannelModel.CONSTANT
+    chan_mod = ChannelModel.MARKOV
     
     # Fixed log10(BER) = p
     '''
@@ -89,16 +89,16 @@ class Parameters(object):
         | P20 P21 P22 |
     '''
     # Line zero
-    P00 = 0.8
-    P01 = 0.1
+    P00 = 0.1
+    P01 = 0
     
     # Line one
-    P10 = 0.8
-    P11 = 0.1
+    P10 = 0
+    P11 = 0.01
     
     # Line two
-    P20 = 0.8
-    P21 = 0.1
+    P20 = 0.1
+    P21 = 0.05
     
     # Buiuld the transition matrix
     P02 = 1 - P00 - P01
@@ -106,5 +106,3 @@ class Parameters(object):
     P22 = 1 - P20 - P21
     
     transition_mtx = np.matrix([[P00, P01, P02], [P10, P11, P12],[P20, P21, P22]])
-    
-    
