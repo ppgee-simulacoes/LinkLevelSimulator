@@ -12,7 +12,7 @@ from channel import Channel
 from statistics import Statistics
 from results import Results
 from theoretical import Theoretical
-from src.support.enumerations import SimType
+from support.enumerations import SimType
 
 class SimulationThread(object):
     def __init__(self,param,figs_dir):
