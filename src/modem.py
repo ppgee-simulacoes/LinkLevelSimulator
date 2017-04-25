@@ -12,7 +12,7 @@ Created on Mon Apr 10 08:54:40 2017
 @author: Calil
 """
 
-from numpy import log2,sin,cos,pi,arange,array,sqrt,append,zeros
+from numpy import log2,sin,cos,pi,arange,array,sqrt,append,zeros,sum
 from itertools import product
 
 from support.enumerations import ModType
@@ -45,6 +45,9 @@ class Modem(object):
         constellation: 1D complex array
             Symbol constellation mapping in bit counting order.
         """
+        if mod_order == 0 or ((mod_order & (mod_order - 1))) != 0:
+            raise NameError("Modulation order not a power of two!")
+        
         self.set_modulation(mod_order,mod_type,constellation)
         
         self.__norm = norm
@@ -74,6 +77,54 @@ class Modem(object):
     def constellation(self):
         return self.__constellation
     
+    @property
+    def scaling(self):
+        return self.__scaling
+    
+    def modulate(self,in_bits):
+        """
+        Modulates input bits, creating correspondent symbols according to the
+        modulation order.
+        
+        Code adapted from: https://github.com/veeresht/CommPy
+        
+        Parameters
+        __________
+        in_bits: 1D array of integers
+            Bits to be modulated.
+            
+        Returns
+        _______
+        symbols: 1D array of complex numbers
+            Symbols correspondent to modulated bits
+        """
+        padded = self.pad_bits(in_bits)
+        mp = map(lambda i: self.bitarray2dec(padded[i:i+self.__bits_per_symbol]),\
+                 range(0, len(padded), self.__bits_per_symbol))
+        index_list = array(list(mp))
+        baseband_symbols = self.constellation[index_list.astype(int)]
+        
+        if self.__norm:
+            baseband_symbols = baseband_symbols/self.__scaling
+
+        return baseband_symbols
+    
+    def demodulate(self,in_symbols):
+        """
+        Demodulates imput symbols, by finding closes constelation element.
+        
+        Parameters
+        __________
+        in_symbols: 1D array of complex numbers
+            Received symbol signal. May contain noise.
+            
+        Returns
+        _______
+        bits: 1D array of integers
+            Closest bit demodulation for received symbols.
+        """
+        pass
+    
     def set_modulation(self,mod_order,mod_type,constellation):
         """        
         Code adapted from: https://github.com/veeresht/CommPy
@@ -102,6 +153,9 @@ class Modem(object):
             else:
                 self.__constellation = constellation
                 
+        self.__scaling = sqrt(sum(abs(self.__constellation)**2)/\
+                                   len(self.__constellation))
+                
     def __psk_symbol(self,i):
         return cos(2*pi*(i-1)/self.__mod_order) +\
                sin(2*pi*(i-1)/self.__mod_order)*(0+1j)
@@ -128,44 +182,5 @@ class Modem(object):
             else:
                 raise NameError('Bit array length error!')
         return in_bits
+        
     
-    def modulate(self,in_bits):
-        """
-        Modulates input bits, creating correspondent symbols according to the
-        modulation order.
-        
-        Code adapted from: https://github.com/veeresht/CommPy
-        
-        Parameters
-        __________
-        in_bits: 1D array of integers
-            Bits to be modulated.
-            
-        Returns
-        _______
-        symbols: 1D array of complex numbers
-            Symbols correspondent to modulated bits
-        """
-        padded = self.pad_bits(in_bits)
-        mp = map(lambda i: self.bitarray2dec(padded[i:i+self.__bits_per_symbol]),\
-                 range(0, len(padded), self.__bits_per_symbol))
-        index_list = array(list(mp))
-        baseband_symbols = self.constellation[index_list.astype(int)]
-
-        return baseband_symbols
-    
-    def demodulate(self,in_symbols):
-        """
-        Demodulates imput symbols, by finding closes constelation element.
-        
-        Parameters
-        __________
-        in_symbols: 1D array of complex numbers
-            Received symbol signal. May contain noise.
-            
-        Returns
-        _______
-        bits: 1D array of integers
-            Closest bit demodulation for received symbols.
-        """
-        pass

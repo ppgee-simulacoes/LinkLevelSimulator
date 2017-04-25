@@ -26,10 +26,15 @@ class ModemTest(unittest.TestCase):
         const = np.array([1+0j, -1+1j, -1+0j, -1-1j])
         self.modem_custom = Modem(4,ModType.CUSTOM,constellation=const)
         
+        # 64 QAM modulator
+        self.modem_64qam = Modem(64,ModType.QAM,norm=True)
+        
     def test_mod_order(self):
         self.assertEqual(self.modem_qpsk.mod_order,4)
         self.assertEqual(self.modem_8psk.mod_order,8)
         self.assertEqual(self.modem_16qam.mod_order,16)
+        with self.assertRaises(NameError):
+            Modem(15,ModType.CUSTOM)
         
     def test_bits_per_symbol(self):
         self.assertEqual(self.modem_qpsk.bits_per_symbol,2)
@@ -48,6 +53,11 @@ class ModemTest(unittest.TestCase):
     def test_norm(self):
         self.assertFalse(self.modem_qpsk.norm)
         self.assertTrue(self.modem_16qam.norm)
+        
+    def test_scaling(self):
+        self.assertEqual(self.modem_16qam.scaling,np.sqrt(10))
+        self.assertEqual(self.modem_qpsk.scaling,1)
+        self.assertEqual(self.modem_64qam.scaling,np.sqrt(42))
     
     def test_constellation(self):
         #Tolerance
@@ -116,7 +126,7 @@ class ModemTest(unittest.TestCase):
             self.modem_8psk.modulate(bits)
         
         #16-QAM Modulation
-        expected_symbs = np.array([-3-1j,1+3j])
+        expected_symbs = np.array([-3-1j,1+3j])/np.sqrt(10)
         symbs = self.modem_16qam.modulate(bits)
         self.assertEqual(len(symbs),len(bits)/4)
         self.assertTrue(np.allclose(np.real(symbs),np.real(expected_symbs),atol=eps))
@@ -141,7 +151,7 @@ class ModemTest(unittest.TestCase):
         self.assertTrue(np.allclose(np.imag(symbs),np.imag(expected_symbs),atol=eps))
         
         #16-QAM Modulation
-        expected_symbs = np.array([-3-1j,1+3j,-3-3j])
+        expected_symbs = np.array([-3-1j,1+3j,-3-3j])/np.sqrt(10)
         symbs = self.modem_16qam.modulate(bits)
         self.assertEqual(len(symbs),1 + np.floor(len(bits)/4))
         self.assertTrue(np.allclose(np.real(symbs),np.real(expected_symbs),atol=eps))
