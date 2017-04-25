@@ -80,6 +80,14 @@ class ModemTest(unittest.TestCase):
                                     np.real(const_custom),atol = eps))
         self.assertTrue(np.allclose(np.imag(self.modem_custom.constellation),\
                                     np.imag(const_custom)))
+        
+    def test_set_modulation(self):
+        with self.assertRaises(NameError):
+            Modem(4,ModType.CUSTOM)
+        
+        with self.assertRaises(NameError):
+            const = np.array([1, 2, 3])
+            Modem(4,ModType.CUSTOM,constellation=const)
 
     
 if __name__ == '__main__':
