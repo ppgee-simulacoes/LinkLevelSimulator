@@ -2,8 +2,6 @@
 """
 Modem class, modulates and demodulates signal.
 
-Code adapted from: https://github.com/veeresht/CommPy
-
 Main methods:
     modulate -- modulates input bits. Modulation order is defined in 
                 construction.
@@ -77,6 +75,9 @@ class Modem(object):
         return self.__constellation
     
     def set_modulation(self,mod_order,mod_type,constellation):
+        """        
+        Code adapted from: https://github.com/veeresht/CommPy
+        """
         
         self.__mod_order = mod_order
         self.__bits_per_symbol = int(log2(self.__mod_order))
@@ -85,14 +86,14 @@ class Modem(object):
         self.__symbol_mapping = arange(self.__mod_order)
         
         if self.__mod_type == ModType.PSK:
-            self.__constellation = array(list(map(self.psk_symbol,\
+            self.__constellation = array(list(map(self.__psk_symbol,\
                                                   self.__symbol_mapping)))
             
         elif self.__mod_type == ModType.QAM:
             mapping_array = arange(1, sqrt(self.__mod_order)+1) -\
             (sqrt(self.__mod_order)/2)
             
-            self.__constellation = array(list(map(self.qam_symbol,
+            self.__constellation = array(list(map(self.__qam_symbol,
                                  list(product(mapping_array, repeat=2)))))
             
         elif self.__mod_type == ModType.CUSTOM:
@@ -101,44 +102,23 @@ class Modem(object):
             else:
                 self.__constellation = constellation
                 
-    def psk_symbol(self,i):
+    def __psk_symbol(self,i):
         return cos(2*pi*(i-1)/self.__mod_order) +\
                sin(2*pi*(i-1)/self.__mod_order)*(0+1j)
     
-    def qam_symbol(self,i):
+    def __qam_symbol(self,i):
         return (2*i[0]-1) + (2*i[1]-1)*(1j)
-            
-    def map_bits(self,in_bits):
-        """
-        Maps bits to symbols according to modulation scheme.
-        
-        Parameters
-        __________
-        in_bits: 1D array of integers
-            Bits to be mapped.
-            
-        Returns
-        _______
-        symbols: 1D array of complex numbers
-            Symbols correspondent to mapped bits
-        """
-        pass
     
-    def demap_bits(self,in_symbols):
+    def bitarray2dec(self,in_bitarray):
         """
-        Maps symbols to bits according to modulation scheme.
-        
-        Parameters
-        __________
-        in_symbols: 1D array of complex numbers
-            Symbols correspondent to mapped bits
-            
-        Returns
-        _______
-        bits: 1D array of integers
-            Demapped bits.
+        Code adapted from: https://github.com/veeresht/CommPy
         """
-        pass
+        number = 0
+
+        for i in range(len(in_bitarray)):
+            number = number + in_bitarray[i]*pow(2, len(in_bitarray)-1-i)
+
+        return number
     
     def modulate(self,in_bits):
         """

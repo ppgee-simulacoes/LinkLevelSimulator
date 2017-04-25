@@ -88,6 +88,14 @@ class ModemTest(unittest.TestCase):
         with self.assertRaises(NameError):
             const = np.array([1, 2, 3])
             Modem(4,ModType.CUSTOM,constellation=const)
+            
+    def test_bitarray2dec(self):
+        bits = np.array([1,0,1,1,1])
+        self.assertEqual(self.modem_qpsk.bitarray2dec(bits),23)
+        bits = np.array([1,1,0,1,1,0,0])
+        self.assertEqual(self.modem_16qam.bitarray2dec(bits),108)
+        bits = np.array([1,0])
+        self.assertEqual(self.modem_custom.bitarray2dec(bits),2)
 
     
 if __name__ == '__main__':
