@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 Modem class, modulates and demodulates signal.
+
+Code adapted from: https://github.com/veeresht/CommPy
+
 Main methods:
     modulate -- modulates input bits. Modulation order is defined in 
                 construction.
@@ -11,107 +14,99 @@ Created on Mon Apr 10 08:54:40 2017
 @author: Calil
 """
 
-from commpy.modulation import QAMModem, PSKModem
-import numpy as np
+from numpy import log2,sin,cos,pi,arange,array,sqrt
+from itertools import product
+
+from support.enumerations import ModType
 
 class Modem(object):
     
-    def __init__(self,mod_order,norm,pad,constelation = 0):
+    def __init__(self,mod_order,mod_type,norm=False,pad=True,constellation = []):
         """
         Constructor method. Initializes attributes:
             
-        mod_order: integer. Must be an even power of two (2**(2*k))
-            QAM modulation order. Prvide 4 for QPSK.
-                         
+        mod_order: integer.
+            Modulation order. Must be a power of two.
+        mod_type: ModType
+            Type of modulation (PSK, QAM, CUSTOM)
+        norm: bool
+            Boolean to indicate normalization usage.
+        pad: bool
+            Bootlan to indicate padding usage.
+        constellation: 1D complex array
+            Custom symbol constellation mapping in bit counting order.
+        
         Parameters
         __________
         mod_order: integer
-            Modulation order:
-                2       PBSK
-                4       QPSK
-                8       8-PSK
-                16      16-QAM
-                64      64-QAM
-                256     256-QAM    
+            Modulation order.
         norm: bool
             Boolean to indicate normalization usage
         pad: bool
             Boolean to indicate padding usage
-        constelation: 1D complex array
-            Symbol constelation mapping in bit counting order.
+        constellation: 1D complex array
+            Symbol constellation mapping in bit counting order.
         """
-        # Raise exception if provided value is not a power of 2
-        if np.log2(mod_order) != round(np.log2(mod_order)):
-            raise NameError('Modulation order not a power of 2!')
-            
-        # For modulation order lower than 16, use PSK. Otherwise, use QAM
-        if mod_order < 16:
-            self.__commpy_mod = PSKModem(mod_order)
-        else:
-            self.__commpy_mod = QAMModem(mod_order)
-            
+        self.set_modulation(mod_order,mod_type,constellation)
+        
         self.__norm = norm
         self.__pad = pad
-        self.__constelation = constelation
     
-    def get_mod_order(self):
-        """
-        Getter for modulation order.
-        
-        Returns
-        _______
-        mod_order: integer
-            QAM modulation order. 4 means QPSK.
-        """
-        return self.__commpy_mod.m
+    @property
+    def mod_order(self):
+        return self.__mod_order
     
-    def get_normalize(self):
-        """
-        Getter for normalization boolean
-        
-        Returns
-        _______
-        norm: bool
-            True if normalization is performed. False otherwise.
-        """
+    @property
+    def bits_per_symbol(self):
+        return self.__bits_per_symbol
+    
+    @property
+    def mod_type(self):
+        return self.__mod_type
+    
+    @property
+    def norm(self):
         return self.__norm
     
-    def get_padding(self):
-        """
-        Getter for padding boolean
-        
-        Returns
-        _______
-        pad: bool
-            True if padding is performed. False otherwise.
-        """
+    @property
+    def pad(self):
         return self.__pad
     
-    def get_constelation(self):
-        """
-        Getter for constelation mapping
-        
-        Returns
-        _______
-        constelation: complex 1D array
-            Constelation in bit counting order.
-        """
-        return self.__constelation
+    @property
+    def constellation(self):
+        return self.__constellation
     
-    def set_mod_order(self,mod_order):
-        """
-        Setter for modulation order.
+    def set_modulation(self,mod_order,mod_type,constellation):
         
-        Parameters
-        __________
-        mod_order: integer
-            New QAM modulation order. 4 means QPSK.
-        """
-        # For modulation order lower than 16, use PSK. Otherwise, use QAM
-        if mod_order < 16:
-            self.__commpy_mod = PSKModem(mod_order)
-        else:
-            self.__commpy_mod = QAMModem(mod_order)
+        self.__mod_order = mod_order
+        self.__bits_per_symbol = int(log2(self.__mod_order))
+        self.__mod_type = mod_type
+        
+        self.__symbol_mapping = arange(self.__mod_order)
+        
+        if self.__mod_type == ModType.PSK:
+            self.__constellation = array(list(map(self.psk_symbol,\
+                                                  self.__symbol_mapping)))
+            
+        elif self.__mod_type == ModType.QAM:
+            mapping_array = arange(1, sqrt(self.__mod_order)+1) -\
+            (sqrt(self.__mod_order)/2)
+            
+            self.__constellation = array(list(map(self.qam_symbol,
+                                 list(product(mapping_array, repeat=2)))))
+            
+        elif self.__mod_type == ModType.CUSTOM:
+            if len(constellation) != self.__mod_order:
+                raise NameError('Custom constellation error!')
+            else:
+                self.__constellation = constellation
+                
+    def psk_symbol(self,i):
+        return cos(2*pi*(i-1)/self.__mod_order) +\
+               sin(2*pi*(i-1)/self.__mod_order)*(0+1j)
+    
+    def qam_symbol(self,i):
+        return (2*i[0]-1) + (2*i[1]-1)*(1j)
             
     def map_bits(self,in_bits):
         """

@@ -33,3 +33,16 @@ class SimType(Enum):
         if self.__class__ is other.__class__:
             return self.value == other.value
         return NotImplemented
+    
+class ModType(Enum):
+    """
+    Supported modulations
+    """
+    PSK = 0
+    QAM = 1
+    CUSTOM = 2
+    
+    def __eq__(self,other):
+        if self.__class__ is other.__class__:
+            return self.value == other.value
+        return NotImplemented

@@ -8,99 +8,79 @@ Created on Mon Apr 10 09:25:22 2017
 """
 
 import unittest
+import numpy as np
+
+from support.enumerations import ModType
 from modem import Modem
 
 class ModemTest(unittest.TestCase):
     
-    def setUp(self):   
-        # BPSK modem
-        self.mod_bpsk = Modem(2,True,True)
-        # QPSK modem
-        self.mod_qpsk = Modem(4,True,True)
-        # 8-PSK modem
-        self.mod_8psk = Modem(8,True,True)
-        # 16-QAM modem
-        self.mod_16qam = Modem(16,True,True)
-        # 64-QAM modem
-        self.mod_64qam = Modem(64,True,True)
-        # 256-QAM modem
-        self.mod_256qam = Modem(256,True,True)
+    def setUp(self):
+        # QPSK Mpdulator
+        self.modem_qpsk = Modem(4,ModType.PSK)
+        #8PSK Modulator with no padding
+        self.modem_8psk = Modem(8,ModType.PSK,pad=False)
+        #16QAM Modulator with normalization
+        self.modem_16qam = Modem(16,ModType.QAM,norm=True)
+        #Custom modulation order 4
+        const = np.array([1+0j, -1+1j, -1+0j, -1-1j])
+        self.modem_custom = Modem(4,ModType.CUSTOM,constellation=const)
         
-        # No normalization
-        self.mod_no_norm = Modem(2,False,True)
+    def test_mod_order(self):
+        self.assertEqual(self.modem_qpsk.mod_order,4)
+        self.assertEqual(self.modem_8psk.mod_order,8)
+        self.assertEqual(self.modem_16qam.mod_order,16)
         
-        # No padding
-        self.mod_no_pad = Modem(2,True,False)
-    
-    def test_exeptions(self):
-        # Test exception if modulation order is not a power of 2
-        with self.assertRaises(NameError):
-            Modem(15,True,True)
-    
-    def test_get_mod_order(self):
-        self.assertEqual(2,self.mod_bpsk.get_mod_order())
-        self.assertEqual(4,self.mod_qpsk.get_mod_order())
-        self.assertEqual(8,self.mod_8psk.get_mod_order())
-        self.assertEqual(16,self.mod_16qam.get_mod_order())
-        self.assertEqual(64,self.mod_64qam.get_mod_order())
-        self.assertEqual(256,self.mod_256qam.get_mod_order())
-    
-    def test_get_normalize(self):
-        # Assert for normalization boolean
-        self.assertTrue(self.mod_bpsk.get_normalize())
-        self.assertTrue(self.mod_qpsk.get_normalize())
-        self.assertTrue(self.mod_8psk.get_normalize())
-        self.assertTrue(self.mod_16qam.get_normalize())
-        self.assertTrue(self.mod_64qam.get_normalize())
-        self.assertTrue(self.mod_256qam.get_normalize())
+    def test_bits_per_symbol(self):
+        self.assertEqual(self.modem_qpsk.bits_per_symbol,2)
+        self.assertEqual(self.modem_8psk.bits_per_symbol,3)
+        self.assertEqual(self.modem_16qam.bits_per_symbol,4)
         
-        self.assertFalse(self.mod_no_norm.get_normalize())
-        pass
-    
-    def test_get_padding(self):
-        # Assert for padding boolean
-        self.assertTrue(self.mod_bpsk.get_padding())
-        self.assertTrue(self.mod_qpsk.get_padding())
-        self.assertTrue(self.mod_8psk.get_padding())
-        self.assertTrue(self.mod_16qam.get_padding())
-        self.assertTrue(self.mod_64qam.get_padding())
-        self.assertTrue(self.mod_256qam.get_padding())
+    def test_mod_type(self):
+        self.assertEqual(self.modem_qpsk.mod_type,ModType.PSK)
+        self.assertEqual(self.modem_16qam.mod_type,ModType.QAM)
+        self.assertEqual(self.modem_custom.mod_type,ModType.CUSTOM)
         
-        self.assertFalse(self.mod_no_pad.get_padding())
+    def test_pad(self):
+        self.assertTrue(self.modem_qpsk.pad)
+        self.assertFalse(self.modem_8psk.pad)
         
-    def test_get_constelation(self):
-        self.assertEqual(0,self.mod_bpsk.get_constelation())
-        self.assertEqual(0,self.mod_qpsk.get_constelation())
-        self.assertEqual(0,self.mod_8psk.get_constelation())
-        self.assertEqual(0,self.mod_16qam.get_constelation())
-        self.assertEqual(0,self.mod_64qam.get_constelation())
-        self.assertEqual(0,self.mod_256qam.get_constelation())
+    def test_norm(self):
+        self.assertFalse(self.modem_qpsk.norm)
+        self.assertTrue(self.modem_16qam.norm)
     
-    def test_set_mod_order(self):
-        # Create object
-        mod_set = Modem(16,True,True)
+    def test_constellation(self):
+        #Tolerance
+        eps = 1e-5
         
-        # Assert modulation order
-        self.assertEqual(16,mod_set.get_mod_order())
+        const_qpsk_ang = np.deg2rad(np.array([-90,0,90,180]))
+        self.assertTrue(np.allclose(abs(self.modem_qpsk.constellation),1,\
+                                    atol = eps))
+        self.assertTrue(np.allclose(np.angle(self.modem_qpsk.constellation),\
+                                    const_qpsk_ang,atol=eps))
         
-        #Change order and assert again
-        mod_set.set_mod_order(64)
-        self.assertEqual(64,mod_set.get_mod_order())
+        const_8psk_ang = np.deg2rad(np.array([-45, 0, 45, 90, 135, 180,\
+                                              -135,-90]))
+        self.assertTrue(np.allclose(abs(self.modem_8psk.constellation),1,\
+                                    atol = eps))
+        self.assertTrue(np.allclose(np.angle(self.modem_8psk.constellation),\
+                                    const_8psk_ang,atol=eps))
         
-    def test_map(self):
-        pass
-    
-    def test_demap(self):
-        pass
-    
-    def test_modulate(self):
-        pass
-    
-    def test_demodulate(self):
-        pass
-    
-    def test_modulate_and_demodulate(self):
-        pass
+        const_16qam = np.array([-3.-3.j, -3.-1.j, -3.+1.j, -3.+3.j, -1.-3.j,\
+                                -1.-1.j, -1.+1.j, -1.+3.j,  1.-3.j, 1.-1.j,\
+                                1.+1.j,  1.+3.j,  3.-3.j,  3.-1.j,  3.+1.j,\
+                                3.+3.j])
+        self.assertTrue(np.allclose(np.real(self.modem_16qam.constellation),\
+                                    np.real(const_16qam),atol = eps))
+        self.assertTrue(np.allclose(np.imag(self.modem_16qam.constellation),\
+                                    np.imag(const_16qam)))
+        
+        const_custom = np.array([1+0j, -1+1j, -1+0j, -1-1j])
+        self.assertTrue(np.allclose(np.real(self.modem_custom.constellation),\
+                                    np.real(const_custom),atol = eps))
+        self.assertTrue(np.allclose(np.imag(self.modem_custom.constellation),\
+                                    np.imag(const_custom)))
+
     
 if __name__ == '__main__':
     unittest.main()
