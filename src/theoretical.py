@@ -9,7 +9,7 @@ Created on Sun Apr  2 11:16:43 2017
 
 import numpy as np
 import scipy.sparse.linalg as sla
-from src.support.enumerations import ChannelModel
+from src.support.enumerations import ChannelModel, BSCType
 
 
 class Theoretical(object):
@@ -28,10 +28,12 @@ class Theoretical(object):
         self.__p = param.p
         self.__tx_rate = param.tx_rate
         self.__model = param.chan_mod
-        if self.__model == ChannelModel.MARKOV:
-            self.__transition_matrix = param.transition_mtx
-            self.__states_ber = [0, 0.5, self.get_p()]
-            self.markov_solve(self.__transition_matrix)
+        if self.__model == ChannelModel.BSC:
+            self.__bsc_type = param.bsc_type
+            if self.__bsc_type == BSCType.MARKOV:
+                self.__transition_matrix = param.transition_mtx
+                self.__states_ber = [0, 0.5, self.get_p()]
+                self.markov_solve(self.__transition_matrix)
         else:
             self.__state_ps = np.array([])
 
@@ -47,10 +49,11 @@ class Theoretical(object):
         """
         if self.__model is ChannelModel.IDEAL:
             return self.validate_ideal()
-        elif self.__model is ChannelModel.CONSTANT:
-            return self.validate_constant()
-        elif self.__model is ChannelModel.MARKOV:
-            return self.validate_markov()
+        elif self.__model is ChannelModel.BSC:
+            if self.__bsc_type is BSCType.CONSTANT:
+                return self.validate_constant()
+            elif self.__bsc_type is BSCType.MARKOV:
+                return self.validate_markov()
         else:
             raise NameError('Unknown channel model!')
 

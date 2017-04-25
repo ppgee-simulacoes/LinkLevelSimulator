@@ -10,6 +10,7 @@ Created on Thu Mar 30 16:32:35 2017
 
 import numpy as np
 from src.support.enumerations import ChannelModel
+from src.support.enumerations import BSCType
 from src.support.enumerations import SimType
 
 class Parameters(object):
@@ -67,7 +68,10 @@ class Parameters(object):
     # CHANNEL PARAMETERS
     
     # Channel model
-    chan_mod = ChannelModel.MARKOV
+    chan_mod = ChannelModel.IDEAL
+    if chan_mod == ChannelModel.BSC:
+        bsc_type = BSCType.MARKOV
+
     
     # Fixed log10(BER) = p
     '''
