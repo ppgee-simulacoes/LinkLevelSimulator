@@ -125,6 +125,8 @@ class Modem(object):
         Modulates input bits, creating correspondent symbols according to the
         modulation order.
         
+        Code adapted from: https://github.com/veeresht/CommPy
+        
         Parameters
         __________
         in_bits: 1D array of integers
@@ -135,7 +137,12 @@ class Modem(object):
         symbols: 1D array of complex numbers
             Symbols correspondent to modulated bits
         """
-        pass
+        mp = map(lambda i: self.bitarray2dec(in_bits[i:i+self.__bits_per_symbol]),\
+                 range(0, len(in_bits), self.__bits_per_symbol))
+        index_list = list(mp)
+        baseband_symbols = self.constellation[index_list]
+
+        return baseband_symbols
     
     def demodulate(self,in_symbols):
         """
