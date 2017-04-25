@@ -41,7 +41,13 @@ class RRCFilter(object):
         up_factor: int
             Upsampling factor
         """
-        pass
+        self.__N = N
+        self.__alpha = alpha
+        self.__Ts = Ts
+        self.__Fs = Fs
+        self.__up_factor = up_factor
+        
+        self.__response = self.filter_response(N,alpha,Ts,Fs)
     
     def tx_filter(self,symbols):
         """
@@ -75,6 +81,30 @@ class RRCFilter(object):
         """
         pass
     
+    @property
+    def N(self):
+        return self.__N
+    
+    @property
+    def alpha(self):
+        return self.__alpha
+    
+    @property
+    def Ts(self):
+        return self.__Ts
+    
+    @property
+    def Fs(self):
+        return self.__Fs
+    
+    @property
+    def up_factor(self):
+        return self.__up_factor
+    
+    @property
+    def response(self):
+        return self.__response
+    
     def upsample(self,symbols):
         pass
     
@@ -84,7 +114,7 @@ class RRCFilter(object):
     def downsample(self,sig):
         pass
     
-    def filter_response(self):
+    def filter_response(self,N,alpha,Ts,Fs):
         pass
     
     
