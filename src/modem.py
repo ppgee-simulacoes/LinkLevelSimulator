@@ -12,7 +12,7 @@ Created on Mon Apr 10 08:54:40 2017
 @author: Calil
 """
 
-from numpy import log2,sin,cos,pi,arange,array,sqrt
+from numpy import log2,sin,cos,pi,arange,array,sqrt,append,zeros
 from itertools import product
 
 from support.enumerations import ModType
@@ -120,6 +120,15 @@ class Modem(object):
 
         return number
     
+    def pad_bits(self,in_bits):
+        remainder = len(in_bits) % self.__bits_per_symbol
+        if remainder != 0:
+            if self.__pad:
+                return append(in_bits,zeros(self.__bits_per_symbol - remainder))
+            else:
+                raise NameError('Bit array length error!')
+        return in_bits
+    
     def modulate(self,in_bits):
         """
         Modulates input bits, creating correspondent symbols according to the
@@ -137,10 +146,11 @@ class Modem(object):
         symbols: 1D array of complex numbers
             Symbols correspondent to modulated bits
         """
-        mp = map(lambda i: self.bitarray2dec(in_bits[i:i+self.__bits_per_symbol]),\
-                 range(0, len(in_bits), self.__bits_per_symbol))
-        index_list = list(mp)
-        baseband_symbols = self.constellation[index_list]
+        padded = self.pad_bits(in_bits)
+        mp = map(lambda i: self.bitarray2dec(padded[i:i+self.__bits_per_symbol]),\
+                 range(0, len(padded), self.__bits_per_symbol))
+        index_list = array(list(mp))
+        baseband_symbols = self.constellation[index_list.astype(int)]
 
         return baseband_symbols
     

@@ -101,6 +101,7 @@ class ModemTest(unittest.TestCase):
         #Error margin
         eps = 1e-5
         
+        # Tests without padding
         bits = np.array([0,0,0,1,1,0,1,1])
         
         # QPSK Modulation
@@ -109,6 +110,10 @@ class ModemTest(unittest.TestCase):
         self.assertEqual(len(symbs),len(bits)/2)
         self.assertTrue(np.allclose(np.real(symbs),np.real(expected_symbs),atol=eps))
         self.assertTrue(np.allclose(np.imag(symbs),np.imag(expected_symbs),atol=eps))
+        
+        # 8PSK Modulation
+        with self.assertRaises(NameError):
+            self.modem_8psk.modulate(bits)
         
         #16-QAM Modulation
         expected_symbs = np.array([-3-1j,1+3j])
@@ -121,6 +126,31 @@ class ModemTest(unittest.TestCase):
         expected_symbs = np.array([1+0j, -1+1j, -1+0j, -1-1j])
         symbs = self.modem_custom.modulate(bits)
         self.assertEqual(len(symbs),len(bits)/2)
+        self.assertTrue(np.allclose(np.real(symbs),np.real(expected_symbs),atol=eps))
+        self.assertTrue(np.allclose(np.imag(symbs),np.imag(expected_symbs),atol=eps))
+        
+        # Tests with padding
+        bits = np.array([0,0,0,1,1,0,1,1,0])
+        
+        # Tests without padding
+        # QPSK Modulation
+        expected_symbs = np.array([0-1j,1+0j,0+1j,-1+0j,0-1j])
+        symbs = self.modem_qpsk.modulate(bits)
+        self.assertEqual(len(symbs),1 + np.floor(len(bits)/2))
+        self.assertTrue(np.allclose(np.real(symbs),np.real(expected_symbs),atol=eps))
+        self.assertTrue(np.allclose(np.imag(symbs),np.imag(expected_symbs),atol=eps))
+        
+        #16-QAM Modulation
+        expected_symbs = np.array([-3-1j,1+3j,-3-3j])
+        symbs = self.modem_16qam.modulate(bits)
+        self.assertEqual(len(symbs),1 + np.floor(len(bits)/4))
+        self.assertTrue(np.allclose(np.real(symbs),np.real(expected_symbs),atol=eps))
+        self.assertTrue(np.allclose(np.imag(symbs),np.imag(expected_symbs),atol=eps))
+        
+        # Custom Modulation
+        expected_symbs = np.array([1+0j, -1+1j, -1+0j, -1-1j, 1+0j])
+        symbs = self.modem_custom.modulate(bits)
+        self.assertEqual(len(symbs),1 + np.floor(len(bits)/2))
         self.assertTrue(np.allclose(np.real(symbs),np.real(expected_symbs),atol=eps))
         self.assertTrue(np.allclose(np.imag(symbs),np.imag(expected_symbs),atol=eps))
 
