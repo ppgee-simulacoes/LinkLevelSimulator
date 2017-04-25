@@ -11,7 +11,7 @@ Supervisor:
 Prof. Andre Noll Barreto (andre.barreto@ene.unb.br)
 
 Students:
-
+Eduardo Gonçalves Sousa (eduardo.sousa@aluno.unb.br)
 
 This simulator was built for educational purposes and models a simple transmission link.
 
