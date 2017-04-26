@@ -68,7 +68,9 @@ class RRCFilter(object):
         signal: 1D complex array
             Output signal
         """
-        pass
+        up_symbols = self.upsample(symbols)
+        signal = self.apply_filter(self.response,up_symbols)
+        return signal
     
     def rx_filter(self,signal):
         """
@@ -140,7 +142,7 @@ class RRCFilter(object):
     
         return y
     
-    def apply_filter(self,resp,sig,up_fac):
+    def apply_filter(self,resp,sig):
         delay_samp = int(0.5*(len(resp)))
         pad_sig = np.append(sig,np.zeros(delay_samp))
         y = sg.lfilter(resp,1.0,pad_sig)

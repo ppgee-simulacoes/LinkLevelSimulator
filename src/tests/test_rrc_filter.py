@@ -21,6 +21,7 @@ class RRCFilterTest(unittest.TestCase):
         self.filter1 = RRCFilter(1000,0.8,1e-4,2e6,8)
         self.filter2 = RRCFilter(2000,0.6,1e-3,2e5,16)
         self.filter3 = RRCFilter(33,0.911,2e-5,2.3e6,4)
+        self.filter4 = RRCFilter(100,0.6,1e-5,2e6,32)
         
     def test_N(self):
         self.assertEqual(self.filter1.N,1000)
@@ -57,7 +58,6 @@ class RRCFilterTest(unittest.TestCase):
         
         if self.plot_flag:
             plt.plot(t,h)
-            plt.xlabel("Time [s]")
             plt.ylabel("Impulse response")
             plt.show()
             
@@ -70,34 +70,41 @@ class RRCFilterTest(unittest.TestCase):
         
         # Filter 1 and assert delay
         h = self.filter1.response
-        filt_sig = self.filter1.apply_filter(h,sig,8)
+        filt_sig = self.filter1.apply_filter(h,sig)
         self.assertEqual(np.argmax(filt_sig),0)
         
         if self.plot_flag:
             plt.plot(filt_sig)
-            plt.xlabel("Time [s]")
             plt.ylabel("Filtered signal")
             plt.show()
             
         # Filter 2 and assert delay
         h = self.filter2.response
-        filt_sig = self.filter2.apply_filter(h,sig,16)
+        filt_sig = self.filter2.apply_filter(h,sig)
         self.assertEqual(np.argmax(filt_sig),0)
         
         if self.plot_flag:
             plt.plot(filt_sig)
-            plt.xlabel("Time [s]")
             plt.ylabel("Filtered signal")
             plt.show()
         
         # Filter 3 and assert delay
         h = self.filter3.response
-        filt_sig = self.filter3.apply_filter(h,sig,4)
+        filt_sig = self.filter3.apply_filter(h,sig)
         self.assertEqual(np.argmax(filt_sig),0)
         
         if self.plot_flag:
             plt.plot(filt_sig)
-            plt.xlabel("Time [s]")
+            plt.ylabel("Filtered signal")
+            plt.show()
+            
+    def test_tx_filter(self):
+        symbs = np.array([3,-1,1,-1,1,-1,1,3,-1,1,-1,1,-1,1,3])
+        signal = self.filter4.tx_filter(symbs)
+        self.assertEqual(len(signal),32*len(symbs))
+        
+        if self.plot_flag:
+            plt.plot(signal)
             plt.ylabel("Filtered signal")
             plt.show()
         
