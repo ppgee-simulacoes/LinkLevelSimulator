@@ -49,7 +49,9 @@ class RRCFilter(object):
         self.__Fs = Fs
         self.__up_factor = up_factor
         
-        self.__response = self.filter_response(N,alpha,Ts,Fs)
+        h, t = self.filter_response(N,alpha,Ts,Fs)
+        self.__response = h
+        self.__time = t
     
     def tx_filter(self,symbols):
         """
@@ -107,6 +109,10 @@ class RRCFilter(object):
     def response(self):
         return self.__response
     
+    @property
+    def time(self):
+        return self.__time
+    
     def upsample(self,x):
         """
         Upsample the input array by a factor of n
@@ -140,6 +146,60 @@ class RRCFilter(object):
         pass
     
     def filter_response(self,N,alpha,Ts,Fs):
-        pass
+        """
+        Generates a root raised cosine (RRC) filter (FIR) impulse response.
+        
+        Code adapted from: https://github.com/veeresht/CommPy
+    
+        Parameters
+        ----------
+        N : int
+            Length of the filter in samples.
+    
+        alpha : float
+            Roll off factor (Valid values are [0, 1]).
+    
+        Ts : float
+            Symbol period in seconds.
+    
+        Fs : float
+            Sampling Rate in Hz.
+    
+        Returns
+        ---------
+    
+        h_rrc : 1-D ndarray of floats
+            Impulse response of the root raised cosine filter.
+    
+        time_idx : 1-D ndarray of floats
+            Array containing the time indices, in seconds, for
+            the impulse response.
+        """
+    
+        T_delta = 1/float(Fs)
+        time_idx = ((np.arange(N)-N/2))*T_delta
+        sample_num = np.arange(N)
+        h_rrc = np.zeros(N, dtype=float)
+    
+        for x in sample_num:
+            t = (x-N/2)*T_delta
+            if t == 0.0:
+                h_rrc[x] = 1.0 - alpha + (4*alpha/np.pi)
+            elif alpha != 0 and t == Ts/(4*alpha):
+                h_rrc[x] = (alpha/np.sqrt(2))*(((1+2/np.pi)* \
+                        (np.sin(np.pi/(4*alpha)))) + ((1-2/np.pi)*(np.cos(np.pi/(4*alpha)))))
+            elif alpha != 0 and t == -Ts/(4*alpha):
+                h_rrc[x] = (alpha/np.sqrt(2))*(((1+2/np.pi)* \
+                        (np.sin(np.pi/(4*alpha)))) + ((1-2/np.pi)*(np.cos(np.pi/(4*alpha)))))
+            else:
+                h_rrc[x] = (np.sin(np.pi*t*(1-alpha)/Ts) +  \
+                        4*alpha*(t/Ts)*np.cos(np.pi*t*(1+alpha)/Ts))/ \
+                        (np.pi*t*(1-(4*alpha*t/Ts)*(4*alpha*t/Ts))/Ts)
+    
+        # Normalize filter
+        power = np.sum(abs(h_rrc)**2)
+        h_rrc = h_rrc/np.sqrt(power)
+        
+        return h_rrc, time_idx
     
     
