@@ -15,7 +15,7 @@ class RRCFilterTest(unittest.TestCase):
     
     def setUp(self):
         # Flag for plotting
-        self.plot_flag = True
+        self.plot_flag = False
         
         # Filters
         self.filter1 = RRCFilter(1000,0.8,1e-4,2e6,8)
@@ -38,11 +38,16 @@ class RRCFilterTest(unittest.TestCase):
     def test_up_factor(self):
         self.assertEqual(self.filter1.up_factor,8)
         
-    def test_up_sample(self):
+    def test_up_and_down_sample(self):
+        #Upsample
         symbs = np.ones(10)
         up_symbs = self.filter1.upsample(symbs)
         self.assertEqual(len(up_symbs),80)
         self.assertEqual(np.sum(up_symbs),10)
+        #Downsample
+        down_symbs = self.filter1.downsample(up_symbs)
+        self.assertTrue(np.all(down_symbs == symbs))
+        self.assertEqual(np.sum(down_symbs),10)
         
     def test_filter_response(self):
         h, t = self.filter1.filter_response(1000,0.8,1e-4,2e6)

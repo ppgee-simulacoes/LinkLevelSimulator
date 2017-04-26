@@ -149,7 +149,8 @@ class RRCFilter(object):
         return y[delay_samp:]
     
     def downsample(self,sig):
-        pass
+        idx = np.arange(0,len(sig),self.__up_factor)
+        return sig[idx]
     
     def filter_response(self,N,alpha,Ts,Fs):
         """
