@@ -86,7 +86,9 @@ class RRCFilter(object):
         symbols: 1D complex array
             Output symbols
         """
-        pass
+        filt_sig = self.apply_filter(self.response,signal)
+        rx_symbs = self.downsample(filt_sig)
+        return rx_symbs
     
     @property
     def N(self):
