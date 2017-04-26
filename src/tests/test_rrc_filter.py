@@ -6,6 +6,7 @@ Created on Tue Apr 25 20:11:26 2017
 """
 
 import unittest
+import numpy as np
 
 from rrc_filter import RRCFilter
 
@@ -29,6 +30,12 @@ class RRCFilterTest(unittest.TestCase):
         
     def test_up_factor(self):
         self.assertEqual(self.filter1.up_factor,8)
+        
+    def test_up_sample(self):
+        symbs = np.ones(10)
+        up_symbs = self.filter1.upsample(symbs)
+        self.assertEqual(len(up_symbs),80)
+        self.assertEqual(np.sum(up_symbs),10)
         
 if __name__ == '__main__':
     unittest.main()

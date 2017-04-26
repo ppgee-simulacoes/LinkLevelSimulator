@@ -11,6 +11,8 @@ Created on Tue Apr 25 20:06:30 2017
 @author: Calil
 """
 
+import numpy as np
+
 class RRCFilter(object):
     def __init__(self,N,alpha,Ts,Fs,up_factor):
         """
@@ -105,8 +107,31 @@ class RRCFilter(object):
     def response(self):
         return self.__response
     
-    def upsample(self,symbols):
-        pass
+    def upsample(self,x):
+        """
+        Upsample the input array by a factor of n
+    
+        Adds n-1 zeros between consecutive samples of x
+        
+        Code adapted from: https://github.com/veeresht/CommPy
+    
+        Parameters
+        ----------
+        x : 1D ndarray
+            Input array.
+    
+        Returns
+        -------
+        y : 1D ndarray
+            Output upsampled array.
+        """
+        y = np.empty(len(x)*self.__up_factor, dtype=complex)
+        y[0::self.__up_factor] = x
+        zero_array = np.zeros(len(x), dtype=complex)
+        for i in range(1, self.__up_factor):
+            y[i::self.__up_factor] = zero_array
+    
+        return y
     
     def apply_filter(self,sig):
         pass
