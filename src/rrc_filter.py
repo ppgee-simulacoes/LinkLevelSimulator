@@ -140,9 +140,10 @@ class RRCFilter(object):
     
         return y
     
-    def apply_filter(self,resp,sig):
+    def apply_filter(self,resp,sig,up_fac):
         delay_samp = int(0.5*(len(resp)))
-        y = sg.lfilter(resp,1.0,sig)
+        pad_sig = np.append(sig,np.zeros(delay_samp))
+        y = sg.lfilter(resp,1.0,pad_sig)
         return y[delay_samp:]
     
     def downsample(self,sig):

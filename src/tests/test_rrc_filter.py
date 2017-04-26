@@ -15,12 +15,12 @@ class RRCFilterTest(unittest.TestCase):
     
     def setUp(self):
         # Flag for plotting
-        self.plot_flag = False
+        self.plot_flag = True
         
         # Filters
         self.filter1 = RRCFilter(1000,0.8,1e-4,2e6,8)
         self.filter2 = RRCFilter(2000,0.6,1e-3,2e5,16)
-        self.filter3 = RRCFilter(30,0.45,2.2e-5,1.3e6,4)
+        self.filter3 = RRCFilter(33,0.911,2e-5,2.3e6,4)
         
     def test_N(self):
         self.assertEqual(self.filter1.N,1000)
@@ -65,11 +65,12 @@ class RRCFilterTest(unittest.TestCase):
         n = int(self.filter1.Fs/1000)
         t = np.linspace(0,0.001,n)
         sig = np.zeros(n)
-        sig[0] = 10
+        sig[0] = 2
+        sig[n-1] = 1
         
         # Filter 1 and assert delay
         h = self.filter1.response
-        filt_sig = self.filter1.apply_filter(h,sig)
+        filt_sig = self.filter1.apply_filter(h,sig,8)
         self.assertEqual(np.argmax(filt_sig),0)
         
         if self.plot_flag:
@@ -80,7 +81,7 @@ class RRCFilterTest(unittest.TestCase):
             
         # Filter 2 and assert delay
         h = self.filter2.response
-        filt_sig = self.filter2.apply_filter(h,sig)
+        filt_sig = self.filter2.apply_filter(h,sig,16)
         self.assertEqual(np.argmax(filt_sig),0)
         
         if self.plot_flag:
@@ -91,7 +92,7 @@ class RRCFilterTest(unittest.TestCase):
         
         # Filter 3 and assert delay
         h = self.filter3.response
-        filt_sig = self.filter3.apply_filter(h,sig)
+        filt_sig = self.filter3.apply_filter(h,sig,4)
         self.assertEqual(np.argmax(filt_sig),0)
         
         if self.plot_flag:
