@@ -9,10 +9,10 @@ Main methods:
 
 Created on Mon Apr 10 08:54:40 2017
 
-@author: Calil
+@author: Calil and Eduardo
 """
 
-from numpy import log2,sin,cos,pi,arange,array,sqrt,append,zeros,sum
+from numpy import log2,sin,cos,pi,arange,array,sqrt,append,zeros,sum,argmin,hstack
 from itertools import product
 
 from support.enumerations import ModType
@@ -111,7 +111,7 @@ class Modem(object):
     
     def demodulate(self,in_symbols):
         """
-        Demodulates imput symbols, by finding closes constelation element.
+        Demodulates input symbols, by finding closes constelation element.
         
         Parameters
         __________
@@ -123,7 +123,13 @@ class Modem(object):
         bits: 1D array of integers
             Closest bit demodulation for received symbols.
         """
-        pass
+        mp = map(lambda i: argmin(abs(in_symbols[i] - self.constellation)), \
+                             range(0, len(in_symbols)))
+        index_list = array(list(mp))
+        demod_bits = hstack(map(lambda i: self.dec2bitarray(i, self.num_bits_symbol), \
+                                index_list))
+        
+        return demod_bits
     
     def set_modulation(self,mod_order,mod_type,constellation):
         """        
