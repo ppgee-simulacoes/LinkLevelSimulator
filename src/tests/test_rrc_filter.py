@@ -15,7 +15,7 @@ class RRCFilterTest(unittest.TestCase):
     
     def setUp(self):
         # Flag for plotting
-        self.plot_flag = False
+        self.plot_flag = True
         
         # Filter 1
         self.filter1 = RRCFilter(100,0.8,1e-3,2e6,8)
@@ -50,21 +50,31 @@ class RRCFilterTest(unittest.TestCase):
     def test_plot(self):
         if self.plot_flag:
             #Define variables
-            N = 10000
+            N = 1000
             alpha = 0.8
-            Ts = 0.5e-3
-            Fsamp = 2e6
+            Ts = 1e-4
+            Fs = 1e3
             
             # Calculate response
-            h, t = self.filter1.filter_response(N,alpha,Ts,Fsamp)
+            h, t = self.filter1.filter_response(N,alpha,Ts,Fs)
             
             plt.plot(t,h)
             plt.xlabel("Time [s]")
-            plt.ylabel("Impulse response [s]")
+            plt.ylabel("Impulse response")
             tit = "N=" + str(N) + " alpha=" + str(alpha) + " Ts=" + str(Ts) +\
-                " Fs=" + str(Fsamp/1e6) + "MHz"
+                " Fs=" + str(Fs/1e6) + "MHz"
             plt.title(tit)
             plt.show()
+            
+            sig = np.zeros(1000)
+            sig[0] = 2
+            sig[500] = 1
+            filt_sig = self.filter1.apply_filter(h,Fs,sig)
+            
+            plt.plot(filt_sig)
+            plt.xlabel("Time [s]")
+            plt.ylabel("Filtered signal")
+            plt.show()            
         
 if __name__ == '__main__':
     unittest.main()

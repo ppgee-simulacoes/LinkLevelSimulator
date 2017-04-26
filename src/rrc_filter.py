@@ -12,6 +12,7 @@ Created on Tue Apr 25 20:06:30 2017
 """
 
 import numpy as np
+import scipy.signal as sg
 
 class RRCFilter(object):
     def __init__(self,N,alpha,Ts,Fs,up_factor):
@@ -139,8 +140,13 @@ class RRCFilter(object):
     
         return y
     
-    def apply_filter(self,sig):
-        pass
+    def apply_filter(self,resp,Fs,sig):
+        delay = 0.5*(len(resp)-1)/len(sig)
+        delay_samps = int(Fs*delay)
+        print("delay_samps = ",delay_samps)
+        pad_sig = np.append(sig,np.zeros(delay_samps))
+        y = sg.lfilter(resp,1.0,pad_sig)
+        return y[delay_samps:]
     
     def downsample(self,sig):
         pass
