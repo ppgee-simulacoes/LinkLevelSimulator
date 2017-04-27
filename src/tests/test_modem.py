@@ -174,7 +174,7 @@ class ModemTest(unittest.TestCase):
         bits = self.modem_16qam.demodulate(in_symbols)
         self.assertEqual(len(in_symbols)/4,len(expected_bits))
         self.assertTrue(np.allclose(bits,expected_bits,atol=eps))
-       # pass
+       
     
 if __name__ == '__main__':
     unittest.main()
