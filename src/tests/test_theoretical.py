@@ -10,9 +10,9 @@ Created on Sun Apr  2 11:58:11 2017
 import unittest
 import numpy as np
 
-from src.support.enumerations import ChannelModel
-from src.theoretical import Theoretical
-from src.parameters.parameters import Parameters
+from support.enumerations import ChannelModel
+from theoretical import Theoretical
+from parameters.parameters import Parameters
 
 class TheoreticalTest(unittest.TestCase):
     

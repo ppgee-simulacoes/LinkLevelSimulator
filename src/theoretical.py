@@ -8,7 +8,7 @@ Created on Sun Apr  2 11:16:43 2017
 """
 
 import numpy as np
-from src.support.enumerations import ChannelModel
+from support.enumerations import ChannelModel
 
 class Theoretical(object):
     

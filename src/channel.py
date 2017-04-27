@@ -11,7 +11,7 @@ Created on Mon Mar 27 09:16:52 2017
 
 import numpy as np
 
-from src.support.enumerations import ChannelModel
+from support.enumerations import ChannelModel
 
 class Channel(object):
     

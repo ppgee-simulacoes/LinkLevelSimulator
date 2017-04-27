@@ -9,8 +9,8 @@ Created on Thu Mar 30 16:32:35 2017
 """
 
 import numpy as np
-from src.support.enumerations import ChannelModel
-from src.support.enumerations import SimType
+from support.enumerations import ChannelModel
+from support.enumerations import SimType
 
 class Parameters(object):
     
