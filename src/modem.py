@@ -19,7 +19,7 @@ from support.enumerations import ModType
 
 class Modem(object):
     
-    def __init__(self,mod_order,mod_type,norm=False,pad=True,constellation = []):
+    def __init__(self,mod_order,mod_type,norm=False,pad=True,constellation = [], in_symbols = []):
         """
         Constructor method. Initializes attributes:
             
@@ -33,6 +33,7 @@ class Modem(object):
             Bootlan to indicate padding usage.
         constellation: 1D complex array
             Custom symbol constellation mapping in bit counting order.
+        in_symbols: 1D complex array
         
         Parameters
         __________
@@ -43,6 +44,8 @@ class Modem(object):
         pad: bool
             Boolean to indicate padding usage
         constellation: 1D complex array
+            Symbol constellation mapping in bit counting order.
+        in_symbols: 1D complex array
             Symbol constellation mapping in bit counting order.
         """
         if mod_order == 0 or ((mod_order & (mod_order - 1))) != 0:
@@ -80,6 +83,11 @@ class Modem(object):
     @property
     def scaling(self):
         return self.__scaling
+    
+    @property
+    def in_symbols(self):
+        return self.__in_symbols
+    
     
     def modulate(self,in_bits):
         """
@@ -120,8 +128,11 @@ class Modem(object):
             
         Returns
         _______
-        bits: 1D array of integers
+        demod_bits: 1D array of integers
             Closest bit demodulation for received symbols.
+            
+        
+        Code adapted from: https://github.com/veeresht/CommPy
         """
         mp = map(lambda i: argmin(abs(in_symbols[i] - self.constellation)), \
                              range(0, len(in_symbols)))

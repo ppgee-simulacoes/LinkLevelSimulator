@@ -4,7 +4,7 @@ Modem class unit test.
 
 Created on Mon Apr 10 09:25:22 2017
 
-@author: Calil
+@author: Calil e Eduardo
 """
 
 import unittest
@@ -163,6 +163,9 @@ class ModemTest(unittest.TestCase):
         self.assertEqual(len(symbs),1 + np.floor(len(bits)/2))
         self.assertTrue(np.allclose(np.real(symbs),np.real(expected_symbs),atol=eps))
         self.assertTrue(np.allclose(np.imag(symbs),np.imag(expected_symbs),atol=eps))
-
+        
+    def test_demodulate(self):
+        pass
+    
 if __name__ == '__main__':
     unittest.main()
