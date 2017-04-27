@@ -137,7 +137,7 @@ class Modem(object):
         mp = map(lambda i: argmin(abs(in_symbols[i] - self.constellation)), \
                              range(0, len(in_symbols)))
         index_list = array(list(mp))
-        demod_bits = hstack(map(lambda i: self.dec2bitarray(i, self.num_bits_symbol), \
+        demod_bits = hstack(map(lambda i: self.dec2bitarray(i, self.__bits_per_symbol), \
                                 index_list))
         
         return demod_bits
@@ -191,7 +191,7 @@ class Modem(object):
 
         return number
     
-    def dec2bitarray(in_number, bit_width):
+    def dec2bitarray(self, in_number, bit_width):
         """
         Code adapted from: https://github.com/veeresht/CommPy
         """
