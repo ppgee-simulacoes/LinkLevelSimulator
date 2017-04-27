@@ -15,10 +15,12 @@ import numpy as np
 import scipy.signal as sg
 
 class RRCFilter(object):
-    def __init__(self,N,alpha,Ts,Fs,up_factor):
+    def __init__(self,span,alpha,Ts,Fs):
         """
         Constructor method. Initializes attributes:
             
+        span: int
+            Filter span in number of symbols
         N: int
             Filter length
         alpha: float
@@ -29,10 +31,14 @@ class RRCFilter(object):
             Sampling rate in Hz
         up_factor: int
             Upsampling factor
+        response: 1D float array
+            filter response
         
         Parameters
         __________
         
+        span: int
+            Filter span in number of symbols
         N: int
             Filter length
         alpha: float
@@ -44,13 +50,14 @@ class RRCFilter(object):
         up_factor: int
             Upsampling factor
         """
-        self.__N = N
+        self.__up_factor = int(Ts*Fs)
+        self.__span = span
+        self.__N = span*self.__up_factor
         self.__alpha = alpha
         self.__Ts = Ts
         self.__Fs = Fs
-        self.__up_factor = up_factor
         
-        h, t = self.filter_response(N,alpha,Ts,Fs)
+        h, t = self.filter_response(self.__N,alpha,Ts,Fs)
         self.__response = h
         self.__time = t
     
@@ -68,6 +75,7 @@ class RRCFilter(object):
         signal: 1D complex array
             Output signal
         """
+        self.__n_symbols = len(symbols)
         up_symbols = self.upsample(symbols)
         signal = self.apply_filter(self.response,up_symbols)
         return signal
@@ -87,8 +95,9 @@ class RRCFilter(object):
             Output symbols
         """
         filt_sig = self.apply_filter(self.response,signal)
-        rx_symbs = self.downsample(filt_sig)
-        return rx_symbs
+        delay = 2*int(0.5*(len(self.__response)))
+        rx_symbs = self.downsample(filt_sig[delay:])
+        return rx_symbs[:self.__n_symbols]
     
     @property
     def N(self):
@@ -145,10 +154,10 @@ class RRCFilter(object):
         return y
     
     def apply_filter(self,resp,sig):
-        delay_samp = int(0.5*(len(resp)))
-        pad_sig = np.append(sig,np.zeros(delay_samp))
+        pad_samp = int(1.0*(len(resp)))
+        pad_sig = np.append(sig,np.zeros(pad_samp))
         y = sg.lfilter(resp,1.0,pad_sig)
-        return y[delay_samp:]
+        return y
     
     def downsample(self,sig):
         idx = np.arange(0,len(sig),self.__up_factor)

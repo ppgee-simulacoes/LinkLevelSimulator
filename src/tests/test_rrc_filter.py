@@ -22,13 +22,13 @@ class RRCFilterTest(unittest.TestCase):
         self.plot_flag = True
         
         # Filters
-        self.filter1 = RRCFilter(1000,0.8,1e-4,2e6,8)
-        self.filter2 = RRCFilter(2000,0.6,1e-3,2e5,16)
-        self.filter3 = RRCFilter(33,0.911,2e-5,2.3e6,4)
-        self.filter4 = RRCFilter(100,0.6,1e-5,2e6,64)
+        self.filter1 = RRCFilter(10,0.8,1e-4,2e6)
+        self.filter2 = RRCFilter(20,0.6,1e-3,2e5)
+        self.filter3 = RRCFilter(8,0.911,2e-5,2.3e6)
+        self.filter4 = RRCFilter(6,0.5,1e-3,1e6)
         
     def test_N(self):
-        self.assertEqual(self.filter1.N,1000)
+        self.assertEqual(self.filter1.N,10*int(1e-4*2e6))
         
     def test_alpha(self):
         self.assertEqual(self.filter1.alpha,0.8)
@@ -40,13 +40,13 @@ class RRCFilterTest(unittest.TestCase):
         self.assertEqual(self.filter1.Fs,2e6)
         
     def test_up_factor(self):
-        self.assertEqual(self.filter1.up_factor,8)
+        self.assertEqual(self.filter1.up_factor,int(1e-4*2e6))
         
     def test_up_and_down_sample(self):
         #Upsample
         symbs = np.ones(10)
         up_symbs = self.filter1.upsample(symbs)
-        self.assertEqual(len(up_symbs),80)
+        self.assertEqual(len(up_symbs),int(1e-4*2e6)*10)
         self.assertEqual(np.sum(up_symbs),10)
         #Downsample
         down_symbs = self.filter1.downsample(up_symbs)
@@ -54,7 +54,7 @@ class RRCFilterTest(unittest.TestCase):
         self.assertEqual(np.sum(down_symbs),10)
         
     def test_filter_response(self):
-        h, t = self.filter1.filter_response(1000,0.8,1e-4,2e6)
+        h, t = self.filter1.filter_response(int(10*1e-4*2e6),0.8,1e-4,2e6)
         self.assertAlmostEqual(np.sum(abs(h)**2),1.0,delta=1e-5)
         self.assertTrue(np.all(h == self.filter1.response))
         self.assertTrue(np.all(t == self.filter1.time))
@@ -74,13 +74,13 @@ class RRCFilterTest(unittest.TestCase):
         n = int(self.filter1.Fs/1000)
         t = np.linspace(0,0.001,n)
         sig = np.zeros(n)
-        sig[0] = 2
+        sig[0] = 1
         sig[n-1] = 1
         
         # Filter 1 and assert delay
         h = self.filter1.response
         filt_sig = self.filter1.apply_filter(h,sig)
-        self.assertEqual(np.argmax(filt_sig),0)
+        self.assertEqual(len(filt_sig),(len(h)+len(sig)))
         
         if self.plot_flag:
             plt.plot(filt_sig)
@@ -90,7 +90,7 @@ class RRCFilterTest(unittest.TestCase):
         # Filter 2 and assert delay
         h = self.filter2.response
         filt_sig = self.filter2.apply_filter(h,sig)
-        self.assertEqual(np.argmax(filt_sig),0)
+        self.assertEqual(len(filt_sig),(len(h)+len(sig)))
         
         if self.plot_flag:
             plt.plot(filt_sig)
@@ -100,7 +100,7 @@ class RRCFilterTest(unittest.TestCase):
         # Filter 3 and assert delay
         h = self.filter3.response
         filt_sig = self.filter3.apply_filter(h,sig)
-        self.assertEqual(np.argmax(filt_sig),0)
+        self.assertEqual(len(filt_sig),(len(h)+len(sig)))
         
         if self.plot_flag:
             plt.plot(filt_sig)
@@ -113,7 +113,9 @@ class RRCFilterTest(unittest.TestCase):
         
         # Transmit symbols
         signal = self.filter4.tx_filter(symbs)
-        self.assertEqual(len(signal),64*len(symbs))
+        up = self.filter4.up_factor
+        h = self.filter4.response
+        self.assertEqual(len(signal),up*len(symbs)+len(h))
         self.assertAlmostEqual(np.sum(np.imag(signal)),0,delta=1e-5)
         
         if self.plot_flag:
@@ -134,6 +136,7 @@ class RRCFilterTest(unittest.TestCase):
         rx_symb = self.filter4.rx_filter(signal)
         self.assertEqual(len(rx_symb),len(symbs))
         err = abs(symbs - rx_symb)
+        self.assertAlmostEqual(np.max(err),0.0,delta=1e-1)
         
         if self.plot_flag:
             plt.plot(err)
