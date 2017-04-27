@@ -165,16 +165,14 @@ class ModemTest(unittest.TestCase):
         self.assertTrue(np.allclose(np.imag(symbs),np.imag(expected_symbs),atol=eps))
         
     def test_demodulate(self):
-        #Error margin
-        eps = 1e-5
-        
         # From 16-QAM
         in_symbols = np.array([-3-1j,1+3j])/np.sqrt(10)
         expected_bits = np.array([0,0,0,1,1,0,1,1])
         bits = self.modem_16qam.demodulate(in_symbols)
-        self.assertEqual(len(in_symbols)/4,len(expected_bits))
-        self.assertTrue(np.allclose(bits,expected_bits,atol=eps))
-       
-    
+        print("expected_bits: ", expected_bits)
+        print("bits: ", bits)
+        self.assertEqual(len(in_symbols)*4,len(expected_bits))
+        self.assertTrue(np.allclose(bits,expected_bits))
+        
 if __name__ == '__main__':
     unittest.main()
