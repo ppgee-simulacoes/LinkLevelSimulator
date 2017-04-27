@@ -19,7 +19,7 @@ from support.enumerations import ModType
 
 class Modem(object):
     
-    def __init__(self,mod_order,mod_type,norm=False,pad=True,constellation = [], in_symbols = []):
+    def __init__(self,mod_order,mod_type,norm=False,pad=True,constellation = []):
         """
         Constructor method. Initializes attributes:
             
@@ -190,6 +190,19 @@ class Modem(object):
             number = number + in_bitarray[i]*pow(2, len(in_bitarray)-1-i)
 
         return number
+    
+    def dec2bitarray(in_number, bit_width):
+        """
+        Code adapted from: https://github.com/veeresht/CommPy
+        """
+
+        binary_string = bin(in_number)
+        length = len(binary_string)
+        bitarray = zeros(bit_width, 'int')
+        for i in range(length-2):
+            bitarray[bit_width-i-1] = int(binary_string[length-i-1])
+
+        return bitarray
     
     def pad_bits(self,in_bits):
         remainder = len(in_bits) % self.__bits_per_symbol
