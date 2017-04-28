@@ -61,7 +61,7 @@ class Parameters(object):
     # TRANSMISSION PARAMETERS
     
     # Number of bits per packet
-    n_bits = 1000
+    n_bits = 500
     
     # Transmission rate [Mbps]
     tx_rate = 50
@@ -128,7 +128,7 @@ class Parameters(object):
     symbol_norm = False
     
     # Padding
-    symbol_pad = True
+    symbol_pad = False
     
     # RRC Filter span in symbols
     filter_span = 6

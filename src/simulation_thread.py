@@ -93,15 +93,17 @@ class SimulationThread(object):
         """
         # Transmission chain
         pck_tx = self.station.generate_packet()
-        sym_tx = self.modem.modulate(pck_tx)
-        sig_tx = self.filter.tx_filter(sym_tx)
+#        sym_tx = self.modem.modulate(pck_tx)
+#        sig_tx = self.filter.tx_filter(sym_tx)
         
         # Channel
-        sig_rx = self.chann.propagate(sig_tx)
+        pck_rx = self.chann.propagate(pck_tx)
+#        sym_rx = self.chann.propagate(sym_tx)
+#        sig_rx = self.chann.propagate(sig_tx)
         
         # Reception chain
-        sym_rx = self.filter.rx_filter(sig_rx)
-        pck_rx = self.modem.demodulate(sym_rx)
+#        sym_rx = self.filter.rx_filter(sig_rx)
+#        pck_rx = self.modem.demodulate(sym_rx)
         n_errors, pck_error = self.station.calculate_error(pck_rx)
         
         return n_errors, pck_error
