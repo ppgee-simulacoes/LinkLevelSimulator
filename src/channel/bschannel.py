@@ -1,7 +1,7 @@
 import numpy as np
 
-from channel import Channel
-from src.support.enumerations import BSCType
+from channel.channel import Channel
+from support.enumerations import BSCType
 
 
 class BSChannel(Channel):

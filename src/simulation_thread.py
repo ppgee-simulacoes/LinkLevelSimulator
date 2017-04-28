@@ -9,11 +9,12 @@ Created on Sun Apr  2 11:04:28 2017
 
 from results import Results
 from source import Source
-from src.channel import bschannel, ideal_channel
-from src.support.enumerations import SimType, ChannelModel
+from channel import bschannel, ideal_channel
+from support.enumerations import SimType, ChannelModel, ModType
 from statistics import Statistics
 from theoretical import Theoretical
-
+from modem import Modem
+from rrc_filter import RRCFilter
 
 class SimulationThread(object):
     def __init__(self,param,figs_dir):
@@ -26,6 +27,21 @@ class SimulationThread(object):
         """
         self.param = param
         self.station = Source(param.n_bits, param.seeds[0])
+        
+        if self.param.mod_type == ModType.CUSTOM:
+            self.modem = Modem(self.param.mod_order,self.param.mod_type,\
+                               norm=self.param.symbol_norm,\
+                               pad=self.param.symbol_pad,\
+                               constellation=self.param.constellation)
+        else:
+            self.modem = Modem(self.param.mod_order,self.param.mod_type,\
+                               norm=self.param.symbol_norm,\
+                               pad=self.param.symbol_pad)
+        
+        self.filter = RRCFilter(self.param.filter_span,self.param.roll_off,\
+                                self.param.symbol_time,\
+                                self.param.sample_frequency)
+        
         if self.param.chan_mod == ChannelModel.IDEAL:
             self.chann = ideal_channel.IdealChannel(param.seeds[0], param.p[0])
         elif self.param.chan_mod == ChannelModel.BSC:
@@ -75,8 +91,17 @@ class SimulationThread(object):
             n_errors -- number of bir errors in received packet
             pck_error -- boolean, True if packet has errors
         """
+        # Transmission chain
         pck_tx = self.station.generate_packet()
-        pck_rx = self.chann.propagate(pck_tx)
+        sym_tx = self.modem.modulate(pck_tx)
+        sig_tx = self.filter.tx_filter(sym_tx)
+        
+        # Channel
+        sig_rx = self.chann.propagate(sig_tx)
+        
+        # Reception chain
+        sym_rx = self.filter.rx_filter(sig_rx)
+        pck_rx = self.modem.demodulate(sym_rx)
         n_errors, pck_error = self.station.calculate_error(pck_rx)
         
         return n_errors, pck_error
