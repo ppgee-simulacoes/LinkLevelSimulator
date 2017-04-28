@@ -7,12 +7,13 @@ Created on Sun Apr  2 11:04:28 2017
 @author: Calil
 """
 
-from source import Source
-from channel import Channel
-from statistics import Statistics
 from results import Results
+from source import Source
+from src.channel import bschannel, ideal_channel
+from src.support.enumerations import SimType, ChannelModel
+from statistics import Statistics
 from theoretical import Theoretical
-from support.enumerations import SimType
+
 
 class SimulationThread(object):
     def __init__(self,param,figs_dir):
@@ -24,10 +25,13 @@ class SimulationThread(object):
             param -- parameters object
         """
         self.param = param
-        self.station = Source(param.n_bits,param.seeds[0])
-        self.chann = Channel(param.chan_mod,param.seeds[0],param.p[0])
-        self.stat = Statistics(param.n_bits,param.tx_rate,param.conf)
-        self.res = Results(param,figs_dir)
+        self.station = Source(param.n_bits, param.seeds[0])
+        if self.param.chan_mod == ChannelModel.IDEAL:
+            self.chann = ideal_channel.IdealChannel(param.seeds[0], param.p[0])
+        elif self.param.chan_mod == ChannelModel.BSC:
+            self.chann = bschannel.BSChannel(param.bsc_type, param.seeds[0], param.p[0], param.transition_mtx)
+        self.stat = Statistics(param.n_bits, param.tx_rate, param.conf)
+        self.res = Results(param, figs_dir)
         self.theo = Theoretical(param)
         
         self.__seed_count = 0
@@ -72,7 +76,7 @@ class SimulationThread(object):
             pck_error -- boolean, True if packet has errors
         """
         pck_tx = self.station.generate_packet()
-        pck_rx = self.chann.fade(pck_tx)
+        pck_rx = self.chann.propagate(pck_tx)
         n_errors, pck_error = self.station.calculate_error(pck_rx)
         
         return n_errors, pck_error
