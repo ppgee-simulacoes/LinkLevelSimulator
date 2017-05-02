@@ -165,13 +165,25 @@ class ModemTest(unittest.TestCase):
         self.assertTrue(np.allclose(np.imag(symbs),np.imag(expected_symbs),atol=eps))
         
     def test_demodulate(self):
+        # QPSK Modulation
+        in_symbols = np.array([0-1j,1+0j,0+1j,-1+0j])
+        expected_bits = np.array([0,0,0,1,1,0,1,1])
+        bits = self.modem_qpsk.demodulate(in_symbols)
+        self.assertEqual(len(in_symbols)*2,len(expected_bits))
+        self.assertTrue(np.allclose(bits,expected_bits))
+        
         # From 16-QAM
         in_symbols = np.array([-3-1j,1+3j])/np.sqrt(10)
         expected_bits = np.array([0,0,0,1,1,0,1,1])
         bits = self.modem_16qam.demodulate(in_symbols)
-        print("expected_bits: ", expected_bits)
-        print("bits: ", bits)
         self.assertEqual(len(in_symbols)*4,len(expected_bits))
+        self.assertTrue(np.allclose(bits,expected_bits))
+        
+        # Custom Modulation
+        in_symbols = np.array([1+0j, -1+1j, -1+0j, -1-1j])
+        expected_bits = np.array([0,0,0,1,1,0,1,1])
+        bits = self.modem_custom.demodulate(in_symbols)
+        self.assertEqual(len(in_symbols)*2,len(expected_bits))
         self.assertTrue(np.allclose(bits,expected_bits))
         
 if __name__ == '__main__':
