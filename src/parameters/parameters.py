@@ -12,6 +12,7 @@ import numpy as np
 from src.support.enumerations import ChannelModel
 from src.support.enumerations import BSCType
 from src.support.enumerations import SimType
+from src.support.enumerations import ModType
 
 class Parameters(object):
     
@@ -60,7 +61,7 @@ class Parameters(object):
     # TRANSMISSION PARAMETERS
     
     # Number of bits per packet
-    n_bits = 1000
+    n_bits = 500
     
     # Transmission rate [Mbps]
     tx_rate = 50
@@ -113,3 +114,35 @@ class Parameters(object):
     P22 = 1 - P20 - P21
     
     transition_mtx = np.matrix([[P00, P01, P02], [P10, P11, P12],[P20, P21, P22]])
+    
+    # MODULATION PARAMETERS
+    
+    # Modulation order
+    mod_order = 4
+    
+    # Modulation type
+    mod_type = ModType.QAM
+    
+    # Custom modulation type
+    if mod_type == ModType.CUSTOM:
+        constellation = np.array([1+0j, -1+1j, -1+0j, -1-1j])
+        
+    # Symbol normalization
+    symbol_norm = False
+    
+    # Padding
+    symbol_pad = False
+    
+    # RRC Filter span in symbols
+    filter_span = 6
+    
+    # RRC Filter rolloff factor
+    roll_off = 0.5
+    
+    # Symbol time [s]
+    symbol_time = 1e-3
+    
+    # Sampling frequency [Hz]
+    sample_frequency = 2e6
+    
+    

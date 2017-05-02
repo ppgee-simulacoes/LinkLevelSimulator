@@ -9,10 +9,10 @@ Created on Sun Apr  2 15:21:28 2017
 
 import unittest
 import numpy as np
-from src.simulation_thread import SimulationThread
-from src.parameters.parameters import Parameters
-from src.support.enumerations import ChannelModel
-from src.support.enumerations import SimType
+from simulation_thread import SimulationThread
+from parameters.parameters import Parameters
+from support.enumerations import ChannelModel
+from support.enumerations import SimType
 
 class SimulationThreadTest(unittest.TestCase):
     

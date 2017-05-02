@@ -9,8 +9,8 @@ Created on Sun Apr  2 08:42:53 2017
 
 import unittest
 import numpy as np
-from src.results import Results
-from src.parameters.parameters import Parameters
+from results import Results
+from parameters.parameters import Parameters
 
 class ResultsTest(unittest.TestCase):
     
