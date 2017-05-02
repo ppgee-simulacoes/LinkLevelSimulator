@@ -48,6 +48,7 @@ class Modem(object):
         in_symbols: 1D complex array
             Symbol constellation mapping in bit counting order.
         """
+        self.__pad_len = 0
         if mod_order == 0 or ((mod_order & (mod_order - 1))) != 0:
             raise NameError("Modulation order not a power of two!")
         
@@ -212,7 +213,8 @@ class Modem(object):
         remainder = len(in_bits) % self.__bits_per_symbol
         if remainder != 0:
             if self.__pad:
-                return append(in_bits,zeros(self.__bits_per_symbol - remainder))
+                self.__pad_len = self.__bits_per_symbol - remainder
+                return append(in_bits,zeros(self.__pad_len))
             else:
                 raise NameError('Bit array length error!')
         return in_bits
