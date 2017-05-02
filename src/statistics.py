@@ -8,6 +8,7 @@ Created on Tue Mar 28 10:29:08 2017
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 import scipy.stats as sp
 
 class Statistics(object):
@@ -129,5 +130,32 @@ class Statistics(object):
         self.__reset()
         
         return per_tpl, thrpt_tpl
-        
-        
+
+    def plot_psd(self, time_instants, signal_values):
+        """
+        Finishes a group of iterations, and calculates mean PER and Throughput.
+
+        Returns:
+            per -- mean packet error rate
+            per_conf -- confidence increment for per
+            thrpt -- mean throughput
+            thrpt_conf -- confidence increment for thrpt
+        """
+
+        print (time_instants[0])
+        print (len(time_instants))
+        print(time_instants[len(time_instants)-1])
+        initial_instant = time_instants[0]
+        final_instant = time_instants[len(time_instants) - 1]
+
+        sampling_frequency = (final_instant - initial_instant) / (len(time_instants) - 1)
+
+        data_point_number = 256
+
+
+        plt.subplot(2, 1, 1)
+        plt.plot(time_instants, signal_values)
+        plt.subplot(2, 1, 2)
+        plt.psd(signal_values, data_point_number, sampling_frequency)
+
+        plt.show()

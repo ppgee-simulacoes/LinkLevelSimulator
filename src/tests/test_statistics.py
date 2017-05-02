@@ -8,8 +8,9 @@ Created on Mon Mar 27 14:54:10 2017
 """
 
 import unittest
+import numpy as np
 
-from statistics import Statistics
+from src.statistics import Statistics
 
 class StatisticsTest(unittest.TestCase):
     
@@ -113,7 +114,21 @@ class StatisticsTest(unittest.TestCase):
         # wrap_up() should reset lists
         self.assertEqual(0,len(self.stat.get_per_list()))
         self.assertEqual(0,len(self.stat.get_thrpt_list()))
-        
+
+
+        def test_plot_psd(self):
+            # Setting time instant range and respective signal values
+            t = np.arange(0, 10, 100)
+            nse = np.random.randn(len(t))
+            r = np.exp(-t / 0.05)
+
+            cnse = np.convolve(nse, r) * 100
+            cnse = cnse[:len(t)]
+            s = 0.1 * np.sin(2 * np.pi * t) + cnse
+
+            # Plotting PCD
+            self.stat.plot_psd(t, s)
+
 if __name__ == '__main__':
     unittest.main()
         
