@@ -134,12 +134,16 @@ class Modem(object):
         
         Code adapted from: https://github.com/veeresht/CommPy
         """
+        if self.__norm:
+            in_symbols = in_symbols*self.__scaling
+        
         mp = map(lambda i: argmin(abs(in_symbols[i] - self.constellation)), \
                              range(0, len(in_symbols)))
+        
         index_list = array(list(mp))
+                           
         demod_bits = hstack(map(lambda i: self.dec2bitarray(i, self.__bits_per_symbol), \
                                 index_list))
-        
         return demod_bits
     
     def set_modulation(self,mod_order,mod_type,constellation):
@@ -212,5 +216,3 @@ class Modem(object):
             else:
                 raise NameError('Bit array length error!')
         return in_bits
-        
-    
