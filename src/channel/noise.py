@@ -29,7 +29,7 @@ class Noise(object):
         self.__bit_energy = bit_energy
 
     def get_bits_per_symbol(self):
-        return self.__variance
+        return self.__bits_per_symbol
 
     def set_bits_per_symbol(self, bits_per_symbol):
         self.__bits_per_symbol = bits_per_symbol
@@ -46,10 +46,10 @@ class Noise(object):
         if not self.get_bit_energy():
             energy = np.real(in_signal) ** 2 + np.imag(in_signal) ** 2
             self.set_bit_energy((np.sum(energy)/len(in_signal))/self.get_bits_per_symbol())
-        self.set_variance(self.get_bit_energy() / self.get_ebn0)
+        self.set_variance(self.get_bit_energy() / self.get_ebn0())
 
         # Calculate Noise
-        noise = self.__rnd_state.rand(1, in_signal.size) + 1j * self.__rnd_state.rand(1, in_signal.size)
+        noise = self.__rnd_state.randn(1, in_signal.size) + 1j * self.__rnd_state.randn(1, in_signal.size)
         noise *= np.sqrt(self.get_variance()/2)
 
         # Add noise

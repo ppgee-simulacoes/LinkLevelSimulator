@@ -66,7 +66,10 @@ class Parameters(object):
     tx_rate = 50
     
     # CHANNEL PARAMETERS
-    
+
+    # SNR Levels
+    ebn0 = np.linspace(0, 10, num=11)
+
     # Channel model
     chan_mod = ChannelModel.IDEAL
     if chan_mod == ChannelModel.BSC:
