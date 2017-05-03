@@ -141,8 +141,7 @@ class ModemTest(unittest.TestCase):
         
         # Tests with padding
         bits = np.array([0,0,0,1,1,0,1,1,0])
-        
-        # Tests without padding
+     
         # QPSK Modulation
         expected_symbs = np.array([0-1j,1+0j,0+1j,-1+0j,0-1j])
         symbs = self.modem_qpsk.modulate(bits)
@@ -165,6 +164,7 @@ class ModemTest(unittest.TestCase):
         self.assertTrue(np.allclose(np.imag(symbs),np.imag(expected_symbs),atol=eps))
         
     def test_demodulate(self):
+        # Tests without padding
         # QPSK Modulation
         in_symbols = np.array([0-1j,1+0j,0+1j,-1+0j])
         expected_bits = np.array([0,0,0,1,1,0,1,1])
@@ -185,6 +185,21 @@ class ModemTest(unittest.TestCase):
         bits = self.modem_custom.demodulate(in_symbols)
         self.assertEqual(len(in_symbols)*2,len(expected_bits))
         self.assertTrue(np.allclose(bits,expected_bits))
+        
+        # Tests with padding
+        # QPSK Modulation
+        in_symbols = np.array([0-1j,1+0j,0+1j,-1+0j,0-1j])
+        expected_bits = np.array([0,0,0,1,1,0,1,1,0])
+        bits = self.modem_qpsk.demodulate(in_symbols)
+        self.assertEqual(len(in_symbols)*2-1,len(expected_bits))
+        self.assertTrue(np.allclose(np.delete(bits,len(bits)-1),expected_bits))
+        
+        #16-QAM Modulation
+        in_symbols = np.array([-3-1j,1+3j,-3-3j])/np.sqrt(10)
+        expected_bits = np.array([0,0,0,1,1,0,1,1,0])
+        bits = self.modem_16qam.demodulate(in_symbols)
+        self.assertEqual(len(in_symbols)*4-3,len(expected_bits))
+        #self.assertTrue(np.allclose(bits,expected_bits))
         
 if __name__ == '__main__':
     unittest.main()
