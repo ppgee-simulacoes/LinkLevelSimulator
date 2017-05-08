@@ -38,10 +38,10 @@ class Parameters(object):
         FIXED_CONF  -- Simulate multiple seeds util a confidence interval is
                        reached
     '''
-    simulation_type = SimType.FIXED_CONF
+    simulation_type = SimType.FIXED_SEEDS
     
     # Seeds: used if self.simulation_type == SimType.FIXED_SEEDS
-    seeds_flt = np.linspace(1,10, num = 10)
+    seeds_flt = np.linspace(1,2, num = 10)
     seeds = seeds_flt.astype(int)
     
     # Confidence range: used if self.simulation_type = SimType.FIXED_CONF
@@ -53,15 +53,15 @@ class Parameters(object):
     conf = 0.95
     
     # Number of transmitted packets
-    n_pcks = 1000
+    n_pcks = 10
     
     # Warm-up: number of discarted packets at the beginning of iteration
-    n_warm_up_pcks = 10
+    n_warm_up_pcks = 1
     
     # TRANSMISSION PARAMETERS
     
     # Number of bits per packet
-    n_bits = 500
+    n_bits = 16
     
     # Transmission rate [Mbps]
     tx_rate = 50
@@ -131,10 +131,10 @@ class Parameters(object):
     symbol_pad = False
     
     # RRC Filter span in symbols
-    filter_span = 6
+    filter_span = 2
     
     # RRC Filter rolloff factor
-    roll_off = 0.5
+    roll_off = 0.3
     
     # Symbol time [s]
     symbol_time = 1e-3
