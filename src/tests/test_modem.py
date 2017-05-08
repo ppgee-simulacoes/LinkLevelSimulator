@@ -28,7 +28,7 @@ class ModemTest(unittest.TestCase):
         
         # 64 QAM modulator
         self.modem_64qam = Modem(64,ModType.QAM,norm=True)
-        
+
     def test_mod_order(self):
         self.assertEqual(self.modem_qpsk.mod_order,4)
         self.assertEqual(self.modem_8psk.mod_order,8)
@@ -168,38 +168,43 @@ class ModemTest(unittest.TestCase):
         # QPSK Modulation
         in_symbols = np.array([0-1j,1+0j,0+1j,-1+0j])
         expected_bits = np.array([0,0,0,1,1,0,1,1])
+        self.modem_qpsk.pad_len = 0
         bits = self.modem_qpsk.demodulate(in_symbols)
-        self.assertEqual(len(in_symbols)*2,len(expected_bits))
+        self.assertEqual(len(bits),len(expected_bits))
         self.assertTrue(np.allclose(bits,expected_bits))
         
         # From 16-QAM
         in_symbols = np.array([-3-1j,1+3j])/np.sqrt(10)
         expected_bits = np.array([0,0,0,1,1,0,1,1])
+        self.modem_16qam.pad_len = 0
         bits = self.modem_16qam.demodulate(in_symbols)
-        self.assertEqual(len(in_symbols)*4,len(expected_bits))
+        self.assertEqual(len(bits),len(expected_bits))
         self.assertTrue(np.allclose(bits,expected_bits))
         
         # Custom Modulation
         in_symbols = np.array([1+0j, -1+1j, -1+0j, -1-1j])
         expected_bits = np.array([0,0,0,1,1,0,1,1])
+        self.modem_custom.pad_len = 0
         bits = self.modem_custom.demodulate(in_symbols)
-        self.assertEqual(len(in_symbols)*2,len(expected_bits))
+        self.assertEqual(len(bits),len(expected_bits))
         self.assertTrue(np.allclose(bits,expected_bits))
         
         # Tests with padding
         # QPSK Modulation
         in_symbols = np.array([0-1j,1+0j,0+1j,-1+0j,0-1j])
         expected_bits = np.array([0,0,0,1,1,0,1,1,0])
+        self.modem_qpsk.pad_len = 1
         bits = self.modem_qpsk.demodulate(in_symbols)
-        self.assertEqual(len(in_symbols)*2-1,len(expected_bits))
-        self.assertTrue(np.allclose(np.delete(bits,len(bits)-1),expected_bits))
+        self.assertEqual(len(bits),len(expected_bits))
+        self.assertTrue(np.allclose(bits,expected_bits))
         
         #16-QAM Modulation
         in_symbols = np.array([-3-1j,1+3j,-3-3j])/np.sqrt(10)
         expected_bits = np.array([0,0,0,1,1,0,1,1,0])
+        self.modem_16qam.pad_len = 3
         bits = self.modem_16qam.demodulate(in_symbols)
-        self.assertEqual(len(in_symbols)*4-3,len(expected_bits))
-        #self.assertTrue(np.allclose(bits,expected_bits))
+        self.assertEqual(len(bits),len(expected_bits))
+        self.assertTrue(np.allclose(bits,expected_bits))
         
 if __name__ == '__main__':
     unittest.main()
