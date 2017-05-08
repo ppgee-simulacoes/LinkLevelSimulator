@@ -48,7 +48,7 @@ class Modem(object):
         in_symbols: 1D complex array
             Symbol constellation mapping in bit counting order.
         """
-        self.__pad_len = 0
+        self.pad_len = 0
         if mod_order == 0 or ((mod_order & (mod_order - 1))) != 0:
             raise NameError("Modulation order not a power of two!")
         
@@ -143,8 +143,11 @@ class Modem(object):
         
         index_list = array(list(mp))
                            
-        demod_bits = hstack(map(lambda i: self.dec2bitarray(i, self.__bits_per_symbol), \
+        full_demod_bits = hstack(map(lambda i: self.dec2bitarray(i, self.__bits_per_symbol), \
                                 index_list))
+        
+        demod_bits = self.unpad_bits(full_demod_bits)
+        
         return demod_bits
     
     def set_modulation(self,mod_order,mod_type,constellation):
@@ -213,8 +216,15 @@ class Modem(object):
         remainder = len(in_bits) % self.__bits_per_symbol
         if remainder != 0:
             if self.__pad:
-                self.__pad_len = self.__bits_per_symbol - remainder
-                return append(in_bits,zeros(self.__pad_len))
+                self.pad_len = self.__bits_per_symbol - remainder
+                return append(in_bits,zeros(self.pad_len))
             else:
                 raise NameError('Bit array length error!')
         return in_bits
+    
+    def unpad_bits(self,in_bits):
+        if self.pad_len != 0:
+            bits = in_bits[: -self.pad_len]
+            return bits
+        else:
+            return in_bits
