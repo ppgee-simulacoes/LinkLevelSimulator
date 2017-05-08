@@ -7,6 +7,8 @@ Created on Sun Apr  2 11:04:28 2017
 @author: Calil
 """
 
+import numpy as np
+
 from results import Results
 from source import Source
 from channel import bschannel, ideal_channel
@@ -204,8 +206,8 @@ class SimulationThread(object):
         # If simulation type is fixed confidence range
         elif self.param.simulation_type is SimType.FIXED_CONF:
             # New seed is the seed counter
-            self.station.set_seed(self.get_seed_count())
-            self.chann.set_seed(self.get_seed_count())
+            self.station.set_seed(np.random.randint(1000000))
+            self.chann.set_seed(np.random.randint(1000000))
             
         else:
             raise NameError('Unknown simulation type!')

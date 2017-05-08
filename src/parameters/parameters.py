@@ -41,7 +41,7 @@ class Parameters(object):
     simulation_type = SimType.FIXED_SEEDS
     
     # Seeds: used if self.simulation_type == SimType.FIXED_SEEDS
-    seeds_flt = np.linspace(1,2, num = 10)
+    seeds_flt = np.array([50, 10051651])
     seeds = seeds_flt.astype(int)
     
     # Confidence range: used if self.simulation_type = SimType.FIXED_CONF
