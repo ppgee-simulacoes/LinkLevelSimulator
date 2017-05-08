@@ -131,15 +131,15 @@ class Parameters(object):
     symbol_pad = False
     
     # RRC Filter span in symbols
-    filter_span = 2
+    filter_span = 4
     
     # RRC Filter rolloff factor
     roll_off = 0.3
     
     # Symbol time [s]
-    symbol_time = 1e-3
+    symbol_time = 1e-4
     
     # Sampling frequency [Hz]
-    sample_frequency = 2e6
+    sample_frequency = 2e5
     
     
