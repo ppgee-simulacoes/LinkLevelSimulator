@@ -38,7 +38,7 @@ class Parameters(object):
         FIXED_CONF  -- Simulate multiple seeds util a confidence interval is
                        reached
     '''
-    simulation_type = SimType.FIXED_CONF
+    simulation_type = SimType.FIXED_SEEDS
 
     # Maximum number of simulation drops
     max_drops = 100
@@ -50,13 +50,13 @@ class Parameters(object):
     # Confidence range: used if self.simulation_type = SimType.FIXED_CONF
     # Confidence interval  = (mean - h, mean + h)
     # h = conf_range * mean
-    conf_range = 0.01
+    conf_range = 0.2
     
     # Confidence
     conf = 0.95
     
     # Number of transmitted packets
-    n_pcks = 10
+    n_pcks = 100
     
     # Warm-up: number of discarted packets at the beginning of iteration
     n_warm_up_pcks = 0
@@ -64,7 +64,7 @@ class Parameters(object):
     # TRANSMISSION PARAMETERS
     
     # Number of bits per packet
-    n_bits = 500
+    n_bits = 10000
     
     # Transmission rate [Mbps]
     tx_rate = 50

@@ -89,21 +89,25 @@ class SimulationThread(object):
         #        sym_rx = self.chann.propagate(sym_tx)
         #        sig_rx = self.chann.propagate(sig_tx)
 
-        n_errors_list = []
-        pck_error_list = []
+        n_errors_list = [0] * len(self.param.ebn0)
+        pck_error_list = [0] * len(self.param.ebn0)
 
         for ebn0_idx in range(0, len(self.param.ebn0)):
-            pck_corrupted = self.noise.add_noise(pck_channel)
-            pck_received = 1*(pck_corrupted.real > 0) # FOR TESTING
-            # Reception chain
-#           sym_rx = self.filter.rx_filter(sig_rx)
-#           pck_rx = self.modem.demodulate(sym_rx)
-            n_errors, pck_error = self.station.calculate_error(pck_received)
-
-            n_errors_list.append(n_errors)
-            pck_error_list.append(pck_error)
-
+            if not self.stat.get_criteria_per_snr()[ebn0_idx]:
+                pck_corrupted = self.noise.add_noise(pck_channel)
+                pck_received = 1*(pck_corrupted.real > 0) # FOR TESTING
+                # Reception chain
+    #           sym_rx = self.filter.rx_filter(sig_rx)
+    #           pck_rx = self.modem.demodulate(sym_rx)
+                n_errors, pck_error = self.station.calculate_error(pck_received)
+                n_errors_list[ebn0_idx] = n_errors
+                #n_errors_list.append(n_errors)
+                #pck_error_list.append(pck_error)
+                pck_error_list[ebn0_idx] = pck_error
+            else:
+                pass
             self.new_ebn0()
+
 
         return n_errors_list, pck_error_list
     
@@ -148,7 +152,8 @@ class SimulationThread(object):
 
         elif self.param.simulation_type is SimType.FIXED_CONF:
             # Minimum confidence range between PER and Throughput
-            while all(self.stat.get_criteria_per_snr()) is not True:
+            while not all(self.stat.get_criteria_per_snr()):
+
                 if drop_number == self.param.max_drops:
                     self.stat.set_criteria_per_snr([True for value in self.stat.get_criteria_per_snr()])
 

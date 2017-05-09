@@ -168,11 +168,19 @@ class Statistics(object):
         per_conf = np.asarray([value[1] for value in per_tpl])
         thrpt_conf = np.asarray([value[1] for value in thrpt_tpl])
 
-        criteria = ber_conf / ber_mean <= conf_range
-        if all(self.get_criteria_per_snr()) is not True:
-            self.set_criteria_per_snr(criteria.tolist())
+        criteria = [False] * self.__snr_size
+        aux_vector = self.get_criteria_per_snr()
         for idx, value in enumerate(self.get_criteria_per_snr()):
-            if value is True:
+            if not value:
+                criteria[idx] = ber_conf[idx] / ber_mean[idx] <= conf_range
+                if criteria[idx]:
+                    self.get_stats_results()[0][idx] = ber_tpl[idx]
+                    self.get_stats_results()[1][idx] = per_tpl[idx]
+                    self.get_stats_results()[2][idx] = thrpt_tpl[idx]
+                    aux_vector[idx] = criteria[idx]
+            if all(self.get_criteria_per_snr()) and self.get_stats_results()[0][idx] is None:
                 self.get_stats_results()[0][idx] = ber_tpl[idx]
                 self.get_stats_results()[1][idx] = per_tpl[idx]
                 self.get_stats_results()[2][idx] = thrpt_tpl[idx]
+
+        self.set_criteria_per_snr(aux_vector)
