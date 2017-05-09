@@ -7,7 +7,7 @@ Created on Mon Apr  3 20:35:22 2017
 @author: Calil
 """
 
-from parameters import Parameters
+from parameters.parameters import Parameters
 from simulation_thread import SimulationThread
 
 figs_dir = "figs/"

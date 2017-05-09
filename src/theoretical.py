@@ -10,7 +10,7 @@ Created on Sun Apr  2 11:16:43 2017
 import numpy as np
 from scipy import special
 import scipy.sparse.linalg as sla
-from src.support.enumerations import ChannelModel, BSCType
+from support.enumerations import ChannelModel, BSCType
 
 
 class Theoretical(object):

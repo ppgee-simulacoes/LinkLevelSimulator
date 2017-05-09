@@ -50,27 +50,51 @@ class Results(object):
         """Getter for BER mean value list."""
         return self.__ber_list
 
+    def set_ber_list(self, ber):
+        """Getter for BER mean value list."""
+        self.__ber_list = ber
+
     def get_ber_conf(self):
         """Getter for BER confidence delta list."""
         return self.__ber_conf_list
 
+    def set_ber_conf(self, ber_conf):
+        """Setter for PER confidence delta list."""
+        self.__ber_conf_list = ber_conf
+
     def get_per_list(self):
         """Getter for PER mean value list."""
         return self.__per_list
+
+    def set_per_list(self, per):
+        """Setter for PER mean value list."""
+        self.__per_list = per
     
     def get_per_conf(self):
         """Getter for PER confidence delta list."""
         return self.__per_conf_list
-    
+
+    def set_per_conf(self, per_conf):
+        """Setter for PER confidence delta list."""
+        self.__per_conf_list = per_conf
+
     def get_thrpt_list(self):
         """Getter for Throughput mean value list."""
         return self.__thrpt_list
+
+    def set_thrpt_list(self, thrpt):
+        """Setter for Throughput mean value list."""
+        self.__thrpt_list = thrpt
     
     def get_thrpt_conf(self):
         """Getter form Throughput confidence delta list."""
         return self.__thrpt_conf_list
-    
-    def store_res(self, ber, per, thrpt):
+
+    def set_thrpt_conf(self, thrpt_conf):
+        """Getter form Throughput confidence delta list."""
+        self.__thrpt_conf_list = thrpt_conf
+
+    def store_res(self, results):
         """
         Stores BER, PER and Throughput for future ploting.
         
@@ -78,12 +102,18 @@ class Results(object):
             per -- tuple containg PER mean value and confidence delta
             thrpt -- tuple containing Tput mean value and confidence delta
         """
-        self.get_ber_list().append(ber[0])
-        self.get_ber_conf().append(ber[1])
-        self.get_per_list().append(per[0])
-        self.get_per_conf().append(per[1])
-        self.get_thrpt_list().append(thrpt[0])
-        self.get_thrpt_conf().append(thrpt[1])
+
+        ber_mean, ber_conf = zip(*results[0])
+        per_mean, per_conf = zip(*results[1])
+        thrpt_mean, thrpt_conf = zip(*results[2])
+
+        self.set_ber_list(ber_mean)
+        self.set_ber_conf(ber_conf)
+        self.set_per_list(per_mean)
+        self.set_per_conf(per_conf)
+        self.set_thrpt_list(thrpt_mean)
+        self.set_thrpt_conf(thrpt_conf)
+
     
     def plot(self, theo_ber, theo_per, theo_thrpt):
         """

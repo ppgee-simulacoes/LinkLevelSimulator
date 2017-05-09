@@ -9,10 +9,10 @@ Created on Thu Mar 30 16:32:35 2017
 """
 
 import numpy as np
-from src.support.enumerations import ChannelModel
-from src.support.enumerations import BSCType
-from src.support.enumerations import SimType
-from src.support.enumerations import ModType
+from support.enumerations import ChannelModel
+from support.enumerations import BSCType
+from support.enumerations import SimType
+from support.enumerations import ModType
 
 class Parameters(object):
     
@@ -39,9 +39,12 @@ class Parameters(object):
                        reached
     '''
     simulation_type = SimType.FIXED_CONF
-    
+
+    # Maximum number of simulation drops
+    max_drops = 100
+
     # Seeds: used if self.simulation_type == SimType.FIXED_SEEDS
-    seeds_flt = np.linspace(1,10, num = 10)
+    seeds_flt = np.linspace(1,max_drops, num = max_drops)
     seeds = seeds_flt.astype(int)
     
     # Confidence range: used if self.simulation_type = SimType.FIXED_CONF
@@ -53,10 +56,10 @@ class Parameters(object):
     conf = 0.95
     
     # Number of transmitted packets
-    n_pcks = 1000
+    n_pcks = 10
     
     # Warm-up: number of discarted packets at the beginning of iteration
-    n_warm_up_pcks = 10
+    n_warm_up_pcks = 0
     
     # TRANSMISSION PARAMETERS
     

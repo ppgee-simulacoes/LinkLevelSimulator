@@ -1,6 +1,6 @@
 import numpy as np
 
-from channel import Channel
+from channel.channel import Channel
 
 
 class IdealChannel(Channel):
