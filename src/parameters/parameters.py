@@ -41,22 +41,22 @@ class Parameters(object):
     simulation_type = SimType.FIXED_SEEDS
 
     # Maximum number of simulation drops
-    max_drops = 100
+    max_drops = 25
 
     # Seeds: used if self.simulation_type == SimType.FIXED_SEEDS
-    seeds_flt = np.linspace(1,max_drops, num = max_drops)
+    seeds_flt = np.random.randint(2, 10051651, size=max_drops)
     seeds = seeds_flt.astype(int)
     
     # Confidence range: used if self.simulation_type = SimType.FIXED_CONF
     # Confidence interval  = (mean - h, mean + h)
     # h = conf_range * mean
-    conf_range = 0.2
+    conf_range = 0.1
     
     # Confidence
     conf = 0.95
     
     # Number of transmitted packets
-    n_pcks = 100
+    n_pcks = 10
     
     # Warm-up: number of discarted packets at the beginning of iteration
     n_warm_up_pcks = 0
@@ -64,8 +64,8 @@ class Parameters(object):
     # TRANSMISSION PARAMETERS
     
     # Number of bits per packet
-    n_bits = 10000
-    
+    n_bits = 1000
+
     # Transmission rate [Mbps]
     tx_rate = 50
     
@@ -121,7 +121,7 @@ class Parameters(object):
     # MODULATION PARAMETERS
     
     # Modulation order
-    mod_order = 4
+    mod_order = 2
     
     # Modulation type
     mod_type = ModType.QAM
@@ -137,15 +137,15 @@ class Parameters(object):
     symbol_pad = False
     
     # RRC Filter span in symbols
-    filter_span = 6
+    filter_span = 4
     
     # RRC Filter rolloff factor
-    roll_off = 0.5
+    roll_off = 0.3
     
     # Symbol time [s]
-    symbol_time = 1e-3
+    symbol_time = 1e-4
     
     # Sampling frequency [Hz]
-    sample_frequency = 2e6
+    sample_frequency = 2e5
     
     

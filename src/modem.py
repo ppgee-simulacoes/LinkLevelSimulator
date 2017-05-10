@@ -9,10 +9,10 @@ Main methods:
 
 Created on Mon Apr 10 08:54:40 2017
 
-@author: Calil
+@author: Calil and Eduardo
 """
 
-from numpy import log2,sin,cos,pi,arange,array,sqrt,append,zeros,sum
+from numpy import log2,sin,cos,pi,arange,array,sqrt,append,zeros,sum,argmin,hstack
 from itertools import product
 
 from support.enumerations import ModType
@@ -33,6 +33,7 @@ class Modem(object):
             Bootlan to indicate padding usage.
         constellation: 1D complex array
             Custom symbol constellation mapping in bit counting order.
+        in_symbols: 1D complex array
         
         Parameters
         __________
@@ -44,7 +45,10 @@ class Modem(object):
             Boolean to indicate padding usage
         constellation: 1D complex array
             Symbol constellation mapping in bit counting order.
+        in_symbols: 1D complex array
+            Symbol constellation mapping in bit counting order.
         """
+        self.pad_len = 0
         if mod_order == 0 or ((mod_order & (mod_order - 1))) != 0:
             raise NameError("Modulation order not a power of two!")
         
@@ -81,6 +85,11 @@ class Modem(object):
     def scaling(self):
         return self.__scaling
     
+    @property
+    def in_symbols(self):
+        return self.__in_symbols
+    
+    
     def modulate(self,in_bits):
         """
         Modulates input bits, creating correspondent symbols according to the
@@ -111,7 +120,7 @@ class Modem(object):
     
     def demodulate(self,in_symbols):
         """
-        Demodulates imput symbols, by finding closes constelation element.
+        Demodulates input symbols, by finding closes constelation element.
         
         Parameters
         __________
@@ -120,10 +129,26 @@ class Modem(object):
             
         Returns
         _______
-        bits: 1D array of integers
+        demod_bits: 1D array of integers
             Closest bit demodulation for received symbols.
+            
+        
+        Code adapted from: https://github.com/veeresht/CommPy
         """
-        pass
+        if self.__norm:
+            in_symbols = in_symbols*self.__scaling
+        
+        mp = map(lambda i: argmin(abs(in_symbols[i] - self.constellation)), \
+                             range(0, len(in_symbols)))
+        
+        index_list = array(list(mp))
+                           
+        full_demod_bits = hstack(map(lambda i: self.dec2bitarray(i, self.__bits_per_symbol), \
+                                index_list))
+        
+        demod_bits = self.unpad_bits(full_demod_bits)
+        
+        return demod_bits
     
     def set_modulation(self,mod_order,mod_type,constellation):
         """        
@@ -174,13 +199,32 @@ class Modem(object):
 
         return number
     
+    def dec2bitarray(self, in_number, bit_width):
+        """
+        Code adapted from: https://github.com/veeresht/CommPy
+        """
+
+        binary_string = bin(in_number)
+        length = len(binary_string)
+        bitarray = zeros(bit_width, 'int')
+        for i in range(length-2):
+            bitarray[bit_width-i-1] = int(binary_string[length-i-1])
+
+        return bitarray
+    
     def pad_bits(self,in_bits):
         remainder = len(in_bits) % self.__bits_per_symbol
         if remainder != 0:
             if self.__pad:
-                return append(in_bits,zeros(self.__bits_per_symbol - remainder))
+                self.pad_len = self.__bits_per_symbol - remainder
+                return append(in_bits,zeros(self.pad_len))
             else:
                 raise NameError('Bit array length error!')
         return in_bits
-        
     
+    def unpad_bits(self,in_bits):
+        if self.pad_len != 0:
+            bits = in_bits[: -self.pad_len]
+            return bits
+        else:
+            return in_bits

@@ -3,12 +3,12 @@ import numpy as np
 
 class Noise(object):
 
-    def __init__(self, seed, ebn0_db):
+    def __init__(self, seed, ebn0_db, mod_order):
         self.__seed = seed
         self.__rnd_state = np.random.RandomState(seed)
         self.__ebn0_db = ebn0_db
         self.__ebn0 = np.power(10, (self.__ebn0_db/10))
-        self.__bits_per_symbol = 1
+        self.__bits_per_symbol = int(np.log2(mod_order))
         self.__bit_energy = None
         self.__variance = None
 
