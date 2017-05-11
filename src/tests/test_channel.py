@@ -8,10 +8,12 @@ Created on Sun Mar 26 12:12:32 2017
 """
 
 import unittest
+
 import numpy as np
 
-from support.enumerations import ChannelModel
-from channel import Channel
+from src.channel.channel import Channel
+from src.support.enumerations import ChannelModel
+
 
 class ChannelTest(unittest.TestCase):
     def setUp(self):
