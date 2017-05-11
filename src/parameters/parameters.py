@@ -142,4 +142,9 @@ class Parameters(object):
     # Sampling frequency [Hz]
     sample_frequency = 2e5
     
+    # Doppler frequency [Hz]
+    doppler_frequency = 100
+    
+    # Number of scatterers
+    m = 10
     
