@@ -4,3 +4,7 @@ src/__pycache__/
 src/\.spyproject/
 
 *.pyc
+
+src/parameters/__pycache__/
+
+src/support/__pycache__/
