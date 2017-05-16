@@ -59,7 +59,28 @@ class CoderTest(unittest.TestCase):
         # Code
         with self.assertRaises(NameError):
             coded_bits = self.coder.code(bits,k,mapping,pad=False)
-        
+
+    def test_decode(self):
+        # Expected message bits
+        message_bits = np.array([0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1])
+
+        # Geneator Matrix
+        G = np.array([[1, 1, 0, 1, 0, 0, 0],
+                      [0, 1, 1, 0, 1, 0, 0],
+                      [0, 0, 1, 1, 0, 1, 0],
+                      [0, 0, 0, 1, 1, 0, 1]])
+
+        # Signal to decode
+        signal_in = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1,
+                               1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0,
+                               1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1]])
+
+        # Decoded Signal
+        decoded_bits = self.coder.decode(signal_in, G)
+
+        # Compare with expected message
+        self.assertTrue(np.all(decoded_bits == message_bits))
+
 if __name__ == '__main__':
     unittest.main()
         
