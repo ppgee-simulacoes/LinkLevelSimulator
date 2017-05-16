@@ -47,7 +47,8 @@ class SimulationThread(object):
         elif self.param.chan_mod == ChannelModel.BSC:
             self.chann = bschannel.BSChannel(self.param.bsc_type, self.param.seeds[0],
                                              self.param.p[0], self.param.transition_mtx)
-        self.noise = noise.Noise(self.param.seeds[0], self.param.ebn0[0], self.param.mod_order)
+        self.noise = noise.Noise(self.param.seeds[0], self.param.ebn0[0],
+                                 self.param.mod_order, self.param.n_bits)
         self.stat = Statistics(self.param.ebn0, self.param.n_bits, self.param.tx_rate, self.param.conf)
         self.res = Results(self.param, figs_dir)
         self.theo = Theoretical(self.param)

@@ -38,7 +38,7 @@ class Parameters(object):
         FIXED_CONF  -- Simulate multiple seeds util a confidence interval is
                        reached
     '''
-    simulation_type = SimType.FIXED_SEEDS
+    simulation_type = SimType.FIXED_CONF
 
     # Maximum number of simulation drops
     max_drops = 25
