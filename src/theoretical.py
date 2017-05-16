@@ -8,6 +8,7 @@ Created on Sun Apr  2 11:16:43 2017
 """
 
 import numpy as np
+from scipy import special
 import scipy.sparse.linalg as sla
 from support.enumerations import ChannelModel, BSCType
 
@@ -18,13 +19,15 @@ class Theoretical(object):
         Constructor method. Initializes atrributes:
             self.__model -- parameters object
             self.__p -- PER numpy array
-            self.__state_ps -- state probabilities for Markov channel
+            self.__state_ps -- stateebn probabilities for Markov channel
         
         Keyword parameters:
            model -- channel model
            p -- PER numpy array
         """
         self.__n_bits = param.n_bits
+        self.__ebn0_db = param.ebn0
+        self.__ebn0 = np.power(10, (self.__ebn0_db/10))
         self.__p = param.p
         self.__tx_rate = param.tx_rate
         self.__model = param.chan_mod
@@ -48,7 +51,7 @@ class Theoretical(object):
             thrpt_mean -- theoretical mean value of Throughput
         """
         if self.__model is ChannelModel.IDEAL:
-            return self.validate_ideal()
+            return self.validate_awgn()
         elif self.__model is ChannelModel.BSC:
             if self.__bsc_type is BSCType.CONSTANT:
                 return self.validate_constant()
@@ -61,8 +64,12 @@ class Theoretical(object):
         """Getter for Parameters object."""
         return self.__model
 
+    def get_ebn0(self):
+        """Getter for Eb/N0 numpy array."""
+        return self.__ebn0
+
     def get_p(self):
-        """Getter for PER numpy array."""
+        """Getter for BER numpy array."""
         return self.__p
 
     def get_tx_rate(self):
@@ -81,18 +88,19 @@ class Theoretical(object):
         """Getter for state probabilities."""
         return self.__state_ps
 
-    def validate_ideal(self):
+    def validate_awgn(self):
         """
-        Calculates theoretical BER, PER and Throughput for ideal channel.
+        Calculates theoretical BER, PER and Throughput for AWGN channel.
         
         Returns:
             ber_mean -- theoretical mean value of BER
             per_mean -- theoretical mean value of PER
             thrpt_mean -- theoretical mean value of Throughput
         """
-        ber_mean = np.zeros(np.size(self.get_p()))
-        per_mean = np.zeros(np.size(self.get_p()))
-        thrpt_mean = self.get_tx_rate() * np.ones(np.size(self.get_p()))
+        # Inserted for BPSK Modulation just for testing
+        ber_mean = 0.5*special.erfc(np.sqrt(self.get_ebn0()))
+        per_mean = 1 - np.power((1 - ber_mean), self.get_n_bits())
+        thrpt_mean = self.get_tx_rate() * (1 - per_mean)
         return ber_mean, per_mean, thrpt_mean
 
     def validate_constant(self):
