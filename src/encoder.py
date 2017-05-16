@@ -37,7 +37,8 @@ class Encoder(object):
         
         # Pad, if necessary
         if pad:
-            bits_pad = np.append(in_bits,np.zeros(rem))
+            if(rem != 0): bits_pad = np.append(in_bits,np.zeros(k - rem))
+            else: bits_pad = in_bits
         else:
             bits_pad = in_bits
             if rem != 0: raise NameError("Padding not used!")
