@@ -10,7 +10,7 @@ Created on Sun Apr  2 11:16:43 2017
 import numpy as np
 from scipy import special
 import scipy.sparse.linalg as sla
-from support.enumerations import ChannelModel, BSCType
+from support.enumerations import ChannelModel, BSCType, ModType
 
 
 class Theoretical(object):
@@ -28,6 +28,8 @@ class Theoretical(object):
         self.__n_bits = param.n_bits
         self.__ebn0_db = param.ebn0
         self.__ebn0 = np.power(10, (self.__ebn0_db/10))
+        self.__mod = param.mod_type
+        self.__mod_order = param.mod_order
         self.__p = param.p
         self.__tx_rate = param.tx_rate
         self.__model = param.chan_mod
@@ -97,8 +99,18 @@ class Theoretical(object):
             per_mean -- theoretical mean value of PER
             thrpt_mean -- theoretical mean value of Throughput
         """
-        # Inserted for BPSK Modulation just for testing
-        ber_mean = 0.5*special.erfc(np.sqrt(self.get_ebn0()))
+        q_func = lambda x: 0.5*special.erfc(x/np.sqrt(2))
+        if(self.__mod == ModType.PSK):
+            if(self.__mod_order == 2 or self.__mod_order == 2):
+                ber_mean = 0.5*special.erfc(np.sqrt(self.get_ebn0()))
+            else:
+                ber_mean = (2/np.log2(self.__mod_order))*\
+                    q_func(np.sqrt(2*self.get_ebn0()*np.log2(self.__mod_order))*\
+                                np.sin(np.pi/self.__mod_order))
+        elif(self.__mod == ModType.QAM):
+            ber_mean = (4/np.log2(self.__mod_order))*\
+                    q_func(np.sqrt((3*self.get_ebn0()*np.log2(self.__mod_order))/\
+                                   (self.__mod_order - 1)))
         per_mean = 1 - np.power((1 - ber_mean), self.get_n_bits())
         thrpt_mean = self.get_tx_rate() * (1 - per_mean)
         return ber_mean, per_mean, thrpt_mean

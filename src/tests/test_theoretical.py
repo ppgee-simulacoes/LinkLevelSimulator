@@ -12,7 +12,7 @@ import numpy as np
 
 from support.enumerations import ChannelModel
 from theoretical import Theoretical
-from parameters.parameters import Parameters
+from parameters import Parameters
 
 class TheoreticalTest(unittest.TestCase):
     

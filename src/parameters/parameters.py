@@ -38,10 +38,10 @@ class Parameters(object):
         FIXED_CONF  -- Simulate multiple seeds util a confidence interval is
                        reached
     '''
-    simulation_type = SimType.FIXED_CONF
+    simulation_type = SimType.FIXED_SEEDS
 
     # Maximum number of simulation drops
-    max_drops = 25
+    max_drops = 50
 
     # Seeds: used if self.simulation_type == SimType.FIXED_SEEDS
     seeds_flt = np.random.randint(2, 10051651, size=max_drops)
@@ -56,7 +56,7 @@ class Parameters(object):
     conf = 0.95
     
     # Number of transmitted packets
-    n_pcks = 10
+    n_pcks = 30
     
     # Warm-up: number of discarted packets at the beginning of iteration
     n_warm_up_pcks = 0
@@ -121,7 +121,7 @@ class Parameters(object):
     # MODULATION PARAMETERS
     
     # Modulation order
-    mod_order = 2
+    mod_order = 4
     
     # Modulation type
     mod_type = ModType.QAM
