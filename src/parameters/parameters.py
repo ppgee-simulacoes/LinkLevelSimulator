@@ -41,7 +41,7 @@ class Parameters(object):
     simulation_type = SimType.FIXED_SEEDS
 
     # Maximum number of simulation drops
-    max_drops = 50
+    max_drops = 25
 
     # Seeds: used if self.simulation_type == SimType.FIXED_SEEDS
     seeds_flt = np.random.randint(2, 10051651, size=max_drops)
@@ -121,10 +121,10 @@ class Parameters(object):
     # MODULATION PARAMETERS
     
     # Modulation order
-    mod_order = 4
+    mod_order = 2
     
     # Modulation type
-    mod_type = ModType.QAM
+    mod_type = ModType.PSK
     
     # Custom modulation type
     if mod_type == ModType.CUSTOM:
