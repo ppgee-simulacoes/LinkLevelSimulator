@@ -7,11 +7,11 @@ Created on Mon May  8 15:10:20 2017
 
 import numpy as np
 
-class Coder(object):
+class Encoder(object):
     
-    def code(self,in_bits,k,maping,pad=True):
+    def encode(self,in_bits,k,maping,pad=True):
         """
-        Code input bits according to maping matrix.
+        Encode input bits according to maping matrix.
         
         Code adapted from: https://github.com/veeresht/CommPy
         
