@@ -59,15 +59,15 @@ class Encoder(object):
 
         return maped_ra
 
-    def decode(self, in_signal, generator_matrix):
+    def decode(self, in_signal, mapping_matrix):
 
         # get message word size (k), codeword size (n), number of codewords (M)
-        message_size = generator_matrix.shape[0]
-        codeword_size = generator_matrix.shape[1]
+        codeword_size = mapping_matrix.shape[1]
+        message_size = int(np.log2(mapping_matrix.shape[0]))
         num_words = int(in_signal.size/codeword_size)
 
         # get all possible message words from mapping matrix
-        message_alphabet, codeword_alphabet = self.get_alphabet(generator_matrix)
+        message_alphabet = self.get_alphabet(message_size)
 
         # reshape in_signal (M codewords of n size)
         # Change for soft decision decoding
@@ -77,7 +77,7 @@ class Encoder(object):
         # LOOP: Compare each sequence to all possible codewords
         for cod_idx, codeword in enumerate(signal_reshaped):
             # Calculate distance(d)(hamming / euclidian)
-            distances = self.calculate_hamming_distance(codeword, codeword_alphabet)
+            distances = self.calculate_hamming_distance(codeword, mapping_matrix)
             # Choose message with min(d)
             msg_idx = np.where(distances == np.min(distances))
             message[cod_idx] = message_alphabet[msg_idx]
@@ -87,17 +87,17 @@ class Encoder(object):
 
         return message_bits
 
-    def get_alphabet(self, generator_matrix):
+    def get_alphabet(self, message_size):
         # Get all corresponding codeword for each possible message for a given generator matrix
 
         # Get all possible permutation of bits of determined size
-        message_size = generator_matrix.shape[0]
+        #message_size = generator_matrix.shape[0]
         messages = [message for message in itertools.product([0, 1], repeat=message_size)]
         message_alphabet = np.asarray(messages)
 
-        codeword_alphabet = message_alphabet.dot(generator_matrix) % 2
+        #codeword_alphabet = message_alphabet.dot(generator_matrix) % 2
 
-        return message_alphabet, codeword_alphabet
+        return message_alphabet
 
     def bitarray2dec(self,in_bitarray):
         """

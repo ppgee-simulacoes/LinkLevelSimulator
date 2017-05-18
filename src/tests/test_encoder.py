@@ -59,6 +59,19 @@ class EncoderTest(unittest.TestCase):
         # Code
         with self.assertRaises(NameError):
             encoded_bits = self.encoder.encode(bits,k,mapping,pad=False)
+
+    def test_decode(self):
+        # signal to enter the decoder
+        signal_in = np.array([1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0])
+        # Mapping matrix: each line is a message word
+        mapping_matrix = np.array([[0, 0, 0, 0], [1, 1, 1, 1]])
+
+        decoded_bits = self.encoder.decode(signal_in, mapping_matrix)
+
+        # comparison with expected bits
+        expected_bits = np.array([1, 0, 1, 0])
+        self.assertTrue(np.all(decoded_bits == expected_bits))
+
         
 if __name__ == '__main__':
     unittest.main()
