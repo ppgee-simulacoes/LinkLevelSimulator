@@ -38,7 +38,7 @@ class Parameters(object):
         FIXED_CONF  -- Simulate multiple seeds util a confidence interval is
                        reached
     '''
-    simulation_type = SimType.FIXED_SEEDS
+    simulation_type = SimType.FIXED_CONF
 
     # Maximum number of simulation drops
     max_drops = 25
@@ -134,10 +134,10 @@ class Parameters(object):
     symbol_norm = False
     
     # Padding
-    symbol_pad = False
+    symbol_pad = True
     
     # RRC Filter span in symbols
-    filter_span = 4
+    filter_span = 8
     
     # RRC Filter rolloff factor
     roll_off = 0.3
