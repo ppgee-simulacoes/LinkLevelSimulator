@@ -39,35 +39,41 @@ class Parameters(object):
                        reached
     '''
     simulation_type = SimType.FIXED_SEEDS
-    
+
+    # Maximum number of simulation drops
+    max_drops = 25
+
     # Seeds: used if self.simulation_type == SimType.FIXED_SEEDS
-    seeds_flt = np.array([50, 10051651])
+    seeds_flt = np.random.randint(2, 10051651, size=max_drops)
     seeds = seeds_flt.astype(int)
     
     # Confidence range: used if self.simulation_type = SimType.FIXED_CONF
     # Confidence interval  = (mean - h, mean + h)
     # h = conf_range * mean
-    conf_range = 0.01
+    conf_range = 0.1
     
     # Confidence
     conf = 0.95
     
     # Number of transmitted packets
-    n_pcks = 10
+    n_pcks = 30
     
     # Warm-up: number of discarted packets at the beginning of iteration
-    n_warm_up_pcks = 1
+    n_warm_up_pcks = 0
     
     # TRANSMISSION PARAMETERS
     
     # Number of bits per packet
-    n_bits = 16
-    
+    n_bits = 1000
+
     # Transmission rate [Mbps]
     tx_rate = 50
     
     # CHANNEL PARAMETERS
-    
+
+    # SNR Levels
+    ebn0 = np.linspace(0, 10, num=11)
+
     # Channel model
     chan_mod = ChannelModel.IDEAL
     if chan_mod == ChannelModel.BSC:
@@ -115,10 +121,10 @@ class Parameters(object):
     # MODULATION PARAMETERS
     
     # Modulation order
-    mod_order = 4
+    mod_order = 2
     
     # Modulation type
-    mod_type = ModType.QAM
+    mod_type = ModType.PSK
     
     # Custom modulation type
     if mod_type == ModType.CUSTOM:

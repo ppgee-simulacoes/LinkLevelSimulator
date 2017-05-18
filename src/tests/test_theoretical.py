@@ -10,15 +10,18 @@ Created on Sun Apr  2 11:58:11 2017
 import unittest
 import numpy as np
 
-from support.enumerations import ChannelModel
+from support.enumerations import ChannelModel, BSCType, ModType
 from theoretical import Theoretical
-from parameters.parameters import Parameters
+from parameters import Parameters
 
 class TheoreticalTest(unittest.TestCase):
     
     def setUp(self):
         param = Parameters(1)
         param.chan_mod = ChannelModel.IDEAL
+        param.mod_order = 2
+        param.mod_type = ModType.PSK
+        param.ebn0 = np.linspace(0, 10, num=11)
         param.tx_rate = 50
         param.n_bits = 1000
         param.p = np.logspace(1.0e-5,1.0e-3, num = 25)
@@ -26,22 +29,20 @@ class TheoreticalTest(unittest.TestCase):
         # General object
         self.theo = Theoretical(param)
         
-        # Ideal channel object
+        # Ideal channel object, with noise
         self.theo_ideal = Theoretical(param)
         
         # Constant channel object
-        param.chan_mod = ChannelModel.CONSTANT
+        param.chan_mod = ChannelModel.BSC
+        param.bsc_type = BSCType.CONSTANT
         param.p = np.array([0.5, 1.0e-04])
         
         self.theo_const = Theoretical(param)
         
         # Markov channel
-        param.chan_mod = ChannelModel.MARKOV
+        param.chan_mod = ChannelModel.BSC
+        param.bsc_type = BSCType.MARKOV
         param.p = np.array([0.5, 1.0e-4])
-        
-        # Ideal channel object
-        with self.assertRaises(NotImplementedError):
-            self.theo_markov = Theoretical(param)
         
     def test_get_model(self):
         mod = self.theo.get_model()
@@ -62,22 +63,20 @@ class TheoreticalTest(unittest.TestCase):
         # Ideal channel should have 0 BER and PER and Tput = tx_rate
         ber, per, thrpt = self.theo_ideal.validate()
         
-        # Assert values
-        self.assertFalse(np.any(ber != 0))
-        self.assertFalse(np.any(per != 0))
-        self.assertFalse(np.any(thrpt != 50))
+        # Assert lenghts
+        self.assertEqual(len(ber),11)
+        self.assertEqual(len(per),11)
+        self.assertEqual(len(thrpt),11)
         
-        # For now, constant channel sould return exception
+        # Test constant channel
         ber, per, thrpt = self.theo_const.validate()
         self.assertTrue(np.all(np.array([0.5, 1.0e-04]) == ber))
         self.assertAlmostEqual(1,per[0],delta = 0.05)
         self.assertAlmostEqual(9.517e-2,per[1],delta = 0.05e-2)
         self.assertAlmostEqual(0,thrpt[0],delta = 0.05)
         self.assertAlmostEqual(45.242,thrpt[1],delta = 0.05)
-            
-        # For now, Markov channel sould return exception
-        with self.assertRaises(NotImplementedError):
-            ber, per, thrpt = self.theo.validate_markov()
+        
+        
     
 if __name__ == '__main__':
     unittest.main()

@@ -8,12 +8,12 @@ Created on Mon May  8 15:40:31 2017
 import unittest 
 import numpy as np
 
-from coder import Coder
+from encoder import Encoder
 
-class CoderTest(unittest.TestCase):
+class EncoderTest(unittest.TestCase):
     
     def setUp(self):     
-        self.coder = Coder()
+        self.encoder = Encoder()
         
     def test_code(self):
         ## Size of message word
@@ -25,12 +25,12 @@ class CoderTest(unittest.TestCase):
         bits = np.array([1,0,1,0])
         
         # Code
-        coded_bits = self.coder.code(bits,k,mapping)
+        encoded_bits = self.encoder.encode(bits,k,mapping)
         
         # Compare with expected result
         expected = np.array([1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0])
-        self.assertEqual(len(coded_bits),16)
-        self.assertTrue(np.all(coded_bits == expected))
+        self.assertEqual(len(encoded_bits),16)
+        self.assertTrue(np.all(encoded_bits == expected))
         
         ## Size of message word
         k = 2
@@ -41,12 +41,12 @@ class CoderTest(unittest.TestCase):
         bits = np.array([1,0,1])
         
         # Code
-        coded_bits = self.coder.code(bits,k,mapping)
+        encoded_bits = self.encoder.encode(bits,k,mapping)
         
         # Compare with expected result
         expected = np.array([1,1,0,0,1,1,0,0])
-        self.assertEqual(len(coded_bits),8)
-        self.assertTrue(np.all(coded_bits == expected))
+        self.assertEqual(len(encoded_bits),8)
+        self.assertTrue(np.all(encoded_bits == expected))
         
         ## Size of message word
         k = 2
@@ -58,7 +58,7 @@ class CoderTest(unittest.TestCase):
         
         # Code
         with self.assertRaises(NameError):
-            coded_bits = self.coder.code(bits,k,mapping,pad=False)
+            encoded_bits = self.encoder.encode(bits,k,mapping,pad=False)
         
 if __name__ == '__main__':
     unittest.main()

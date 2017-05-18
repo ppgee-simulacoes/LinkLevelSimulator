@@ -59,7 +59,7 @@ class Source(object):
 
         return pck
     
-    def calculate_error(self,pck):
+    def calculate_error(self, pck):
         """
         Calculates bit and packet error.
         
