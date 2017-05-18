@@ -12,3 +12,5 @@ src/support/__pycache__/
 =======
 /src/channel/__pycache__/*.pyc
 >>>>>>> dev_calil_queiroz
+
+src/\.idea/

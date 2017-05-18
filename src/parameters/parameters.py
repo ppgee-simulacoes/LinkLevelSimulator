@@ -149,8 +149,11 @@ class Parameters(object):
     sample_frequency = 2e5
     
     # Doppler frequency [Hz]
-    doppler_frequency = 100
+    doppler_freq = 100
     
     # Number of scatterers
     m = 10
+
+    #Jake's Model parameter -  Rayleigh Fading
+    k = 2
     
