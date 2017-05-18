@@ -10,7 +10,7 @@ Created on Mon Mar 27 14:54:10 2017
 import unittest
 import numpy as np
 
-from src.statistics import Statistics
+from src_old.statistics import Statistics
 
 class StatisticsTest(unittest.TestCase):
     
@@ -127,7 +127,8 @@ class StatisticsTest(unittest.TestCase):
             s = 0.1 * np.sin(2 * np.pi * t) + cnse
 
             # Plotting PCD
-            self.stat.plot_psd(t, s)
+            sf=1/(50E+6)
+            self.stat.plot_psd(sf, s)
 
 if __name__ == '__main__':
     unittest.main()
