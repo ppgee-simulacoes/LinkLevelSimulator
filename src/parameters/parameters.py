@@ -119,9 +119,12 @@ class Parameters(object):
     transition_mtx = np.matrix([[P00, P01, P02], [P10, P11, P12],[P20, P21, P22]])
     
     # MODULATION PARAMETERS
-    
+    # WARNING: Modulations that work well:
+#        1. BPSK (2-PSK)
+#        2. 16-QAM
+        
     # Modulation order
-    mod_order = 2
+    mod_order = 16
     
     # Modulation type
     mod_type = ModType.PSK
