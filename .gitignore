@@ -1,0 +1,5 @@
+
+src/__pycache__/
+
+src/\.spyproject/
+/src/channel/__pycache__/*.pyc

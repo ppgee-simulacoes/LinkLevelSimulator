@@ -9,8 +9,10 @@ Created on Thu Mar 30 16:32:35 2017
 """
 
 import numpy as np
-from src.support.enumerations import ChannelModel
-from src.support.enumerations import SimType
+from support.enumerations import ChannelModel
+from support.enumerations import BSCType
+from support.enumerations import SimType
+from support.enumerations import ModType
 
 class Parameters(object):
     
@@ -37,37 +39,46 @@ class Parameters(object):
                        reached
     '''
     simulation_type = SimType.FIXED_CONF
-    
+
+    # Maximum number of simulation drops
+    max_drops = 25
+
     # Seeds: used if self.simulation_type == SimType.FIXED_SEEDS
-    seeds_flt = np.linspace(1,10, num = 10)
+    seeds_flt = np.random.randint(2, 10051651, size=max_drops)
     seeds = seeds_flt.astype(int)
     
     # Confidence range: used if self.simulation_type = SimType.FIXED_CONF
     # Confidence interval  = (mean - h, mean + h)
     # h = conf_range * mean
-    conf_range = 0.01
+    conf_range = 0.1
     
     # Confidence
     conf = 0.95
     
     # Number of transmitted packets
-    n_pcks = 1000
+    n_pcks = 30
     
     # Warm-up: number of discarted packets at the beginning of iteration
-    n_warm_up_pcks = 10
+    n_warm_up_pcks = 0
     
     # TRANSMISSION PARAMETERS
     
     # Number of bits per packet
     n_bits = 1000
-    
+
     # Transmission rate [Mbps]
     tx_rate = 50
     
     # CHANNEL PARAMETERS
-    
+
+    # SNR Levels
+    ebn0 = np.linspace(0, 10, num=11)
+
     # Channel model
-    chan_mod = ChannelModel.CONSTANT
+    chan_mod = ChannelModel.IDEAL
+    if chan_mod == ChannelModel.BSC:
+        bsc_type = BSCType.MARKOV
+
     
     # Fixed log10(BER) = p
     '''
@@ -89,16 +100,16 @@ class Parameters(object):
         | P20 P21 P22 |
     '''
     # Line zero
-    P00 = 0.8
-    P01 = 0.1
+    P00 = 0.1
+    P01 = 0
     
     # Line one
-    P10 = 0.8
-    P11 = 0.1
+    P10 = 0
+    P11 = 0.01
     
     # Line two
-    P20 = 0.8
-    P21 = 0.1
+    P20 = 0.1
+    P21 = 0.05
     
     # Buiuld the transition matrix
     P02 = 1 - P00 - P01
@@ -107,4 +118,40 @@ class Parameters(object):
     
     transition_mtx = np.matrix([[P00, P01, P02], [P10, P11, P12],[P20, P21, P22]])
     
+    # MODULATION PARAMETERS
     
+    # Modulation order
+    mod_order = 2
+    
+    # Modulation type
+    mod_type = ModType.PSK
+    
+    # Custom modulation type
+    if mod_type == ModType.CUSTOM:
+        constellation = np.array([1+0j, -1+1j, -1+0j, -1-1j])
+        
+    # Symbol normalization
+    symbol_norm = False
+    
+    # Padding
+    symbol_pad = False
+    
+    # RRC Filter span in symbols
+    filter_span = 6
+    
+    # RRC Filter rolloff factor
+    roll_off = 0.3
+    
+    # Symbol time [s]
+    symbol_time = 1e-4
+    
+    # Sampling frequency [Hz]
+    sample_frequency = 2e5
+
+    # CODING PARAMETERS
+
+    # Coding Process
+    coding_process = 2
+
+    # Matrix dimensions
+    mtx_code_dim = [4, 7]
