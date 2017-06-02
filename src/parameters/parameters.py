@@ -38,7 +38,7 @@ class Parameters(object):
         FIXED_CONF  -- Simulate multiple seeds util a confidence interval is
                        reached
     '''
-    simulation_type = SimType.FIXED_SEEDS
+    simulation_type = SimType.FIXED_CONF
 
     # Maximum number of simulation drops
     max_drops = 25
@@ -137,7 +137,7 @@ class Parameters(object):
     symbol_pad = False
     
     # RRC Filter span in symbols
-    filter_span = 4
+    filter_span = 6
     
     # RRC Filter rolloff factor
     roll_off = 0.3
@@ -147,6 +147,15 @@ class Parameters(object):
     
     # Sampling frequency [Hz]
     sample_frequency = 2e5
+
+    # CODING PARAMETERS
+
+    # Coding Process
+    coding_process = 2
+
+    # Matrix dimensions
+    mtx_code_dim = [4, 7]
+
     
     # Doppler frequency [Hz]
     doppler_freq = 100

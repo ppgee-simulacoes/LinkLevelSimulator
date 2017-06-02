@@ -12,6 +12,7 @@ import numpy as np
 from results import Results
 from source import Source
 from channel import bschannel, ideal_channel, noise
+from encoder import Encoder
 from support.enumerations import SimType, ChannelModel, ModType
 from statistics import Statistics
 from theoretical import Theoretical
@@ -29,6 +30,7 @@ class SimulationThread(object):
         """
         self.param = param
         self.station = Source(param.n_bits, param.seeds[0])
+        self.encoder = Encoder(self.param.coding_process, self.param.mtx_code_dim, 0)
         if self.param.mod_type == ModType.CUSTOM:
             self.modem = Modem(self.param.mod_order, self.param.mod_type,
                                norm=self.param.symbol_norm,
@@ -85,7 +87,8 @@ class SimulationThread(object):
         """
         # Transmission chain
         pck_tx = self.station.generate_packet()
-        sym_tx = self.modem.modulate(pck_tx)
+        coded_tx = self.encoder.encode(pck_tx)
+        sym_tx = self.modem.modulate(coded_tx)
         sig_tx = self.filter.tx_filter(sym_tx)
 
         # Channel
@@ -100,7 +103,8 @@ class SimulationThread(object):
 
                 # Reception chain
                 sym_rx = self.filter.rx_filter(sig_corrupted)
-                pck_rx = self.modem.demodulate(sym_rx)
+                coded_rx = self.modem.demodulate(sym_rx)
+                pck_rx = self.encoder.decode(coded_rx)
                 n_errors, pck_error = self.station.calculate_error(pck_rx)
                 n_errors_list[ebn0_idx] = n_errors
                 pck_error_list[ebn0_idx] = pck_error

@@ -8,11 +8,13 @@ Created on Tue Mar 28 10:29:08 2017
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 import scipy.stats as sp
 
 
 class Statistics(object):
     def __init__(self, snr_array, n_bits, tx_rate, conf=0.95):
+
         self.__snr_size = len(snr_array)
         self.__conf = conf  # Confidence
         self.__n_bits = n_bits  # Number of bits per packet
@@ -85,8 +87,8 @@ class Statistics(object):
         self.__n_bit_errors.append(num_bit_errors)
         self.__pck_cnt = self.__pck_cnt + 1
 
-
     def add_iteration_results(self):
+
         """
         Calculates BER, PER and throughput during a given iteration.
         Also saves BER, PER and throughput in their respective lists and
@@ -97,7 +99,6 @@ class Statistics(object):
             per -- packet error rate
             thrpt -- throughput      
         """
-
         n_bit_errors_per_snr = np.sum(np.asarray(self.get_n_bit_errors()), 0)
         ber_per_snr = n_bit_errors_per_snr / (self.get_pck_cnt()*self.get_n_bits())
 
@@ -113,7 +114,6 @@ class Statistics(object):
         self.get_thrpt_list().append(thrpt_per_snr)
 
         self.__reset()
-
 
     def conf_interval(self, data_in):
         """
@@ -184,3 +184,27 @@ class Statistics(object):
                 self.get_stats_results()[2][idx] = thrpt_tpl[idx]
 
         self.set_criteria_per_snr(aux_vector)
+
+    def plot_psd(self, sampling_frequency, signal_values):
+        """
+        Plots the Power Spectral Density graphics for a given signal.
+
+        Returns:
+        """
+
+        # print(time_instants[0])
+        # print(len(time_instants))
+        # print(time_instants[len(time_instants) - 1])
+        # initial_instant = time_instants[0]
+        # final_instant = time_instants[len(time_instants) - 1]
+
+        # sampling_frequency = (final_instant - initial_instant) / (len(time_instants) - 1)
+
+        data_point_number = 256
+
+        #        plt.subplot(2, 1, 1)
+        #        plt.plot(time_instants, signal_values)
+        plt.subplot(1, 1, 1)
+        plt.psd(signal_values, data_point_number, sampling_frequency)
+
+        plt.show()

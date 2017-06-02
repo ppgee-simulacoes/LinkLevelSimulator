@@ -9,9 +9,9 @@ Created on Sun May 14 10:00:08 2017
 
 import numpy as np
 import random
-import itertools
 
-class Encoder(object):
+
+class Coding(object):
     def __init__(self, coding_process, matrix_dimensions, generation_matrix):
         """
         Class constructor.
@@ -112,47 +112,6 @@ class Encoder(object):
 
         return coded_words_array.ravel()
 
-    def decode(self, in_signal):
-
-        # get message word size (k), codeword size (n), number of codewords (M)
-        num_words = int(in_signal.size/self.__codeword_size)
-
-        # get all possible message words from mapping matrix
-        codeword_alphabet = np.empty([len(self.get_codeword_table()), self.__codeword_size], dtype=int)
-        for code_idx, codeword_dec in enumerate(self.get_codeword_table()):
-            codeword_alphabet[code_idx] = self.dec2bitarray(codeword_dec, self.__codeword_size)
-        message_alphabet = self.get_alphabet(self.__message_size)
-
-        # reshape in_signal (M codewords of n size)
-        # Change for soft decision decoding
-        signal_reshaped = np.reshape(in_signal, [num_words, self.__codeword_size])
-
-        message = np.empty([num_words, self.__message_size], dtype=int)
-        # LOOP: Compare each sequence to all possible codewords
-        for cod_idx, codeword in enumerate(signal_reshaped):
-            # Calculate distance(d)(hamming / euclidian)
-            distances = self.calculate_hamming_distance(codeword, codeword_alphabet)
-            # Choose message with min(d)
-            msg_idx = np.min(np.where(distances == np.min(distances)))
-            message[cod_idx] = message_alphabet[msg_idx]
-
-        # Reshape out_signal (M messages of k bits)
-        message_bits = np.reshape(message, self.__message_size * num_words)
-
-        return message_bits
-
-    def get_alphabet(self, message_size):
-        # Get all corresponding codeword for each possible message for a given generator matrix
-
-        # Get all possible permutation of bits of determined size
-        #message_size = generator_matrix.shape[0]
-        messages = [message for message in itertools.product([0, 1], repeat=message_size)]
-        message_alphabet = np.asarray(messages)
-
-        #codeword_alphabet = message_alphabet.dot(generator_matrix) % 2
-
-        return message_alphabet
-
     def dec2bitarray(self, in_decimal, bit_number):
         """
         Code adapted from: https://github.com/veeresht/CommPy
@@ -179,16 +138,3 @@ class Encoder(object):
             number = number + in_bitarray[i] * (2 ** (len(in_bitarray) - 1 - i))
 
         return number
-
-    def calculate_hamming_distance(self, array1, array2):
-        # Calculate the Hamming Distance between two arrays of bits
-        hamming_distance = np.bitwise_xor(array1, array2).sum(1)
-
-        return hamming_distance
-
-    def calculate_euclidean_distance(self, array1, array2):
-        # Calculate the Euclidean Distance between two arrays of floats
-        euclidean_distance = ((array1 - array2)**2).sum()
-
-        return euclidean_distance
-
