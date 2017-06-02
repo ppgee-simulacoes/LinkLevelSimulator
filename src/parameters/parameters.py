@@ -156,7 +156,8 @@ class Parameters(object):
     # Matrix dimensions
     mtx_code_dim = [4, 7]
 
-    
+    # FADING PARAMETERS
+
     # Doppler frequency [Hz]
     doppler_freq = 100
     
@@ -165,4 +166,7 @@ class Parameters(object):
 
     #Jake's Model parameter -  Rayleigh Fading
     k = 2
+
+    # Time
+    time = 1/sample_frequency
     
