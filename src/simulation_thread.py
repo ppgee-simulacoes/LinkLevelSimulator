@@ -18,6 +18,7 @@ from statistics import Statistics
 from theoretical import Theoretical
 from modem import Modem
 from rrc_filter import RRCFilter
+from channel.fading import Fading
 
 class SimulationThread(object):
     def __init__(self,param,figs_dir):
@@ -44,13 +45,17 @@ class SimulationThread(object):
         self.filter = RRCFilter(self.param.filter_span, self.param.roll_off,
                                 self.param.symbol_time,
                                 self.param.sample_frequency)
+
         if self.param.chan_mod == ChannelModel.IDEAL:
             self.chann = ideal_channel.IdealChannel(self.param.seeds[0], self.param.p[0])
         elif self.param.chan_mod == ChannelModel.BSC:
             self.chann = bschannel.BSChannel(self.param.bsc_type, self.param.seeds[0],
                                              self.param.p[0], self.param.transition_mtx)
+
         self.noise = noise.Noise(self.param.seeds[0], self.param.ebn0[0],
                                  self.param.mod_order, self.param.n_bits)
+        self.fading = Fading(self.param.doppler_freq, self.param.m,
+                             self.param.m, self.param.time)
         self.stat = Statistics(self.param.ebn0, self.param.n_bits, self.param.tx_rate, self.param.conf)
         self.res = Results(self.param, figs_dir)
         self.theo = Theoretical(self.param)
@@ -102,7 +107,9 @@ class SimulationThread(object):
                 sig_corrupted = self.noise.add_noise(sig_rx)
 
                 # Reception chain
-                sym_rx = self.filter.rx_filter(sig_corrupted)
+                sym_rx_with_fading = self.fading.propagate(sig_corrupted)
+                sym_rx_filtered = self.filter.rx_filter(sym_rx_with_fading)
+                sym_rx = sym_rx_filtered/self.fading.get_fading()
                 coded_rx = self.modem.demodulate(sym_rx)
                 pck_rx = self.encoder.decode(coded_rx)
                 n_errors, pck_error = self.station.calculate_error(pck_rx)
