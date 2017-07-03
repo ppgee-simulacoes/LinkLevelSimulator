@@ -1,0 +1,2 @@
+Simulation Type,Packet Number,Warm-Up Packet Number,Bits per Packet,Transmission Rate,Channel Model,RRC-Filter Span,Plot PSD,Roll-Off,Sample Frequency
+SimType.FIXED_SEEDS,1000,10,500,50,ChannelModel.IDEAL,6,True,0.5,2000000.0

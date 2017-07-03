@@ -10,7 +10,7 @@ Created on Sun Mar 26 08:14:37 2017
 import unittest
 import numpy as np
 
-from src.source import Source
+from source import Source
 
 class SourceTest(unittest.TestCase):
     

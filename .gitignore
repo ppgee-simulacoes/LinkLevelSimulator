@@ -1,0 +1,18 @@
+
+src/__pycache__/
+
+src/\.spyproject/
+<<<<<<< HEAD
+
+*.pyc
+
+src/parameters/__pycache__/
+
+src/support/__pycache__/
+=======
+/src/channel/__pycache__/*.pyc
+>>>>>>> dev_calil_queiroz
+
+src/\.idea/
+
+src/figs/
