@@ -19,6 +19,7 @@ from theoretical import Theoretical
 from modem import Modem
 from rrc_filter import RRCFilter
 from channel.fading import Fading
+from input_output import InputOutput
 
 class SimulationThread(object):
     def __init__(self,param,figs_dir):
@@ -59,7 +60,15 @@ class SimulationThread(object):
         self.stat = Statistics(self.param.ebn0, self.param.n_bits, self.param.tx_rate, self.param.conf)
         self.res = Results(self.param, figs_dir)
         self.theo = Theoretical(self.param)
-        
+
+        self.io = InputOutput()
+        filename = 'Parameters.csv'
+        fieldnames = ['Simulation Type', 'Packet Number', 'Warm-Up Packet Number', 'Bits per Packet', 'Transmission Rate',
+                      'Channel Model', 'RRC-Filter Span', 'Plot PSD', 'Roll-Off', 'Sample Frequency']
+        fieldvalues = [self.param.simulation_type, self.param.n_pcks, self.param.n_warm_up_pcks, self.param.n_bits, self.param.tx_rate,
+                       self.param.chan_mod, self.param.filter_span, self.param.plot_psd, self.param.roll_off, self.param.sample_frequency]
+        self.io.write_csv_file(filename, fieldnames, fieldvalues)
+
         self.__seed_count = 0
         self.__ebn0_count = 0
 
@@ -95,6 +104,10 @@ class SimulationThread(object):
         coded_tx = self.encoder.encode(pck_tx)
         sym_tx = self.modem.modulate(coded_tx)
         sig_tx = self.filter.tx_filter(sym_tx)
+
+        # Test if the PSD graphic is supposed to be plotted
+        if self.param.plot_psd:
+           self.stat.plot_psd(self.param.sample_frequency, sig_tx)
 
         # Channel
         sig_rx = self.chann.propagate(sig_tx)
@@ -158,6 +171,7 @@ class SimulationThread(object):
                 drop_number += 1
 
             ber_tpl, per_tpl, thrpt_tpl = self.stat.wrap_up()
+
             self.res.store_res([ber_tpl, per_tpl, thrpt_tpl])
 
         elif self.param.simulation_type is SimType.FIXED_CONF:

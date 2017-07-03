@@ -38,7 +38,7 @@ class Parameters(object):
         FIXED_CONF  -- Simulate multiple seeds util a confidence interval is
                        reached
     '''
-    simulation_type = SimType.FIXED_CONF
+    simulation_type = SimType.FIXED_SEEDS
 
     # Maximum number of simulation drops
     max_drops = 25
@@ -169,4 +169,8 @@ class Parameters(object):
 
     # Time
     time = 1/sample_frequency
+
+
+    # PSD PLOTTING OPTION
+    plot_psd = False
     

@@ -8,10 +8,8 @@ Created on Sun Mar 26 08:14:37 2017
 """
 
 import unittest
-import numpy as np
-from input_output import InputOutput as io
-from channel.channel import Channel
-from support.enumerations import SimType, ChannelModel
+from src.input_output import InputOutput as io
+from src.support.enumerations import SimType, ChannelModel
 
 class InputOuputTest(unittest.TestCase, ):
     

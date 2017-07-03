@@ -9,6 +9,7 @@ Created on Thu Mar 30 16:41:59 2017
 
 import numpy as np
 import matplotlib.pyplot as plt
+from input_output import InputOutput
 
 class Results(object):
     
@@ -114,7 +115,13 @@ class Results(object):
         self.set_thrpt_list(thrpt_mean)
         self.set_thrpt_conf(thrpt_conf)
 
-    
+        # Saving results in a file
+        io = InputOutput()
+        filename = 'Results.csv'
+        fieldnames = ['BER MEAN', 'BER CONF', 'PER MEAN', 'PER CONF', 'THRPT MEAN', 'THRPT CONF', '', '', '', '']
+        fieldvalues = [ber_mean, ber_conf, per_mean, per_conf, thrpt_mean, thrpt_conf, '', '', '', '']
+        io.write_csv_file(filename, fieldnames, fieldvalues)
+
     def plot(self, theo_ber, theo_per, theo_thrpt):
         """
         Plots PER vs p and Throughput vs p simulation results.
